@@ -8,7 +8,9 @@ $currentPath = $_SERVER['REQUEST_URI'];
 $currentRole = $_SESSION['auth']['role'] ?? 'student';
 
 function navActive($path, $current) {
-    return (str_starts_with($current, $path)) ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/20' : 'hover:bg-slate-50 hover:text-slate-900';
+    return (str_starts_with($current, $path)) 
+        ? 'active-nav' 
+        : 'text-slate-400';
 }
 ?>
 <!DOCTYPE html>
@@ -21,9 +23,10 @@ function navActive($path, $current) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
-        .sidebar-gradient { background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); }
+        .sidebar-premium { background: #0f172a; border-right: 1px solid rgba(255, 255, 255, 0.05); }
         .nav-link { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        .nav-link:not(.active):hover svg { transform: translateX(2px); color: #0f172a; }
+        .nav-link:hover { background: rgba(255, 255, 255, 0.05); color: white; }
+        .active-nav { background: rgba(14, 165, 233, 0.15); color: #38bdf8; border-l-4 border-brand-500; }
         @media print { .no-print { display: none !important; } }
     </style>
     <script>
@@ -46,15 +49,15 @@ function navActive($path, $current) {
 
 <div class="flex h-full no-print">
     <!-- Sidebar -->
-    <aside class="hidden lg:flex lg:flex-col w-72 sidebar-gradient border-r border-slate-200 h-full fixed inset-y-0 z-50">
+    <aside class="hidden lg:flex lg:flex-col w-72 sidebar-premium h-full fixed inset-y-0 z-50 shadow-xl">
         <!-- Logo -->
-        <div class="flex items-center gap-3 px-8 py-10">
-            <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/30">
-                <span class="text-white font-black text-xl">A</span>
+        <div class="flex items-center gap-4 px-8 py-10">
+            <div class="w-12 h-12 bg-gradient-to-tr from-brand-600 to-brand-400 rounded-2xl flex items-center justify-center shadow-lg shadow-brand-500/30 transform rotate-3 flex-shrink-0">
+                <span class="text-white font-black text-2xl">A</span>
             </div>
             <div>
-                <h1 class="text-xl font-black tracking-tight text-slate-900">ACADEMIA</h1>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mt-1">SaaS University</p>
+                <h1 class="text-2xl font-black tracking-tight text-white leading-none">ACADEMIA</h1>
+                <p class="text-[10px] font-bold text-brand-400 uppercase tracking-[0.2em] mt-1.5">SaaS University</p>
             </div>
         </div>
 
