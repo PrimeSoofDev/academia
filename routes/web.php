@@ -105,7 +105,17 @@ $router->middleware('admin')->post('/users/{id}/delete','UserController@destroy'
 
 $router->middleware('auth')->get('/profile',       'ProfileController@show');
 $router->middleware('auth')->post('/profile',      'ProfileController@update');
-$router->middleware('auth')->get('/results',       'ResultController@index');
+
+// ── Results (role-aware: student sees transcript, staff/lecturer sees entry sheet) ──
+$router->middleware('auth')->get('/results',                                      'ResultController@index');
+$router->middleware('lecturer')->get('/results/courses/{id}',                     'ResultController@courseSheet');
+$router->middleware('lecturer')->post('/results/courses/{id}/save',               'ResultController@saveCourseResults');
+$router->middleware('lecturer')->post('/results/courses/{id}/publish',            'ResultController@publishResults');
+
+// Course drop
+$router->middleware('auth')->post('/courses/{id}/drop',                           'CourseController@drop');
+
+
 
 
 // ─────────────────────────────────────────────

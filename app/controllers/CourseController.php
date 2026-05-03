@@ -8,12 +8,14 @@ require_once ROOT_PATH . '/app/core/Controller.php';
 require_once ROOT_PATH . '/app/models/Course.php';
 require_once ROOT_PATH . '/app/models/Department.php';
 require_once ROOT_PATH . '/app/models/User.php';
+require_once ROOT_PATH . '/app/models/Enrollment.php';
 
 class CourseController extends Controller
 {
     private Course $courseModel;
     private Department $deptModel;
     private User $userModel;
+    private Enrollment $enrollModel;
 
     public function __construct()
     {
@@ -21,6 +23,7 @@ class CourseController extends Controller
         $this->courseModel = new Course();
         $this->deptModel = new Department();
         $this->userModel = new User();
+        $this->enrollModel = new Enrollment();
     }
 
     /**
@@ -203,5 +206,65 @@ class CourseController extends Controller
         $this->courseModel->delete($id, Auth::tenantId());
         $this->flash('success', 'Course deleted successfully.');
         $this->redirect('/courses');
+    }
+
+    /**
+     * GET /my-courses
+     * Show student's enrolled courses
+     */
+    public function myCourses(): void
+    {
+        $tenantId = Auth::tenantId();
+        $userId   = Auth::id();
+
+        $enrolledCourses = $this->enrollModel->getStudentCourses($userId, $tenantId);
+
+        $this->view('courses.my_courses', [
+            'enrolledCourses' => $enrolledCourses
+        ]);
+    }
+
+    /**
+     * POST /courses/{id}/enroll
+     * Enroll the logged-in student into a course
+     */
+    public function enroll(int $id): void
+    {
+        if (!$this->isPost()) $this->redirect('/my-courses');
+
+        $tenantId = Auth::tenantId();
+        $userId   = Auth::id();
+
+        $course = $this->courseModel->find($id, $tenantId);
+        if (!$course) {
+            $this->flash('error', 'Course not found.');
+            $this->redirect('/my-courses');
+        }
+
+        $success = $this->enrollModel->enroll($userId, $id, $tenantId);
+
+        if ($success) {
+            $this->flash('success', "Enrolled in '{$course['code']}' successfully.");
+        } else {
+            $this->flash('info', 'You are already enrolled in this course.');
+        }
+
+        $this->redirect('/my-courses');
+    }
+
+    /**
+     * POST /courses/{id}/drop
+     * Drop a course enrollment
+     */
+    public function drop(int $id): void
+    {
+        if (!$this->isPost()) $this->redirect('/my-courses');
+
+        $tenantId = Auth::tenantId();
+        $userId   = Auth::id();
+
+        $this->enrollModel->drop($userId, $id, $tenantId);
+        $this->flash('success', 'Course dropped successfully.');
+        $this->redirect('/my-courses');
     }
 }
