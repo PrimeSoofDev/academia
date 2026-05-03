@@ -18,10 +18,12 @@ $breadcrumb = [
             <input type="text" id="searchUsers" onkeyup="tableSearch('searchUsers', 'usersTable')" placeholder="Search names, emails..." class="w-full pl-9 pr-4 py-2.5 sm:py-2 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring focus:ring-brand-500/20 text-sm transition-all bg-white" />
         </div>
         
+        <?php if (Auth::isAdmin()): ?>
         <a href="<?= url('/users/create') ?>" class="w-full sm:w-auto px-5 py-2.5 sm:py-2 whitespace-nowrap bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
             Add New User
         </a>
+        <?php endif; ?>
     </div>
 </div>
 

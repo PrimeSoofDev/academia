@@ -26,6 +26,11 @@ class UserController extends Controller
     public function index(): void
     {
         $tenantId = Auth::tenantId();
+        $role     = Auth::role();
+        $userId   = Auth::id();
+        
+        // Get current user details to know their department/faculty
+        $currentUser = $this->userModel->find($userId, $tenantId);
         
         $roleFilter = $this->get('role');
         
@@ -37,6 +42,17 @@ class UserController extends Controller
                 WHERE u.tenant_id = :tenant_id";
         
         $bindings = [':tenant_id' => $tenantId];
+
+        // ── ROLE-BASED FILTERING ──
+        if ($role === 'hod') {
+            // HOD sees only users in their department
+            $sql .= " AND u.department_id = :dept_id";
+            $bindings[':dept_id'] = $currentUser['department_id'];
+        } elseif ($role === 'dean') {
+            // Dean sees only users in their faculty
+            $sql .= " AND u.faculty_id = :faculty_id";
+            $bindings[':faculty_id'] = $currentUser['faculty_id'];
+        }
 
         if ($roleFilter && in_array($roleFilter, ['superadmin', 'vc', 'dean', 'hod', 'lecturer', 'staff', 'student'])) {
             $sql .= " AND u.role = :role";
@@ -61,10 +77,11 @@ class UserController extends Controller
      */
     public function create(): void
     {
+        Auth::authorize(['superadmin', 'vc']); // Dean/HOD cannot create
+        
         $tenantId = Auth::tenantId();
         $faculties = (new Faculty())->all($tenantId);
         $departments = (new Department())->all($tenantId);
-        // We'll skip units for now, or just allow manual entry
 
         $this->view('users.create', [
             'faculties' => $faculties,
@@ -78,6 +95,8 @@ class UserController extends Controller
      */
     public function store(): void
     {
+        Auth::authorize(['superadmin', 'vc']); // Dean/HOD cannot create
+        
         if (!$this->isPost()) $this->redirect('/users');
 
         $name = $this->post('name');

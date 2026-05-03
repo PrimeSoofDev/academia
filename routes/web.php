@@ -92,8 +92,8 @@ $router->middleware('auth')->post('/courses/{id}/enroll',     'CourseController@
 // ─────────────────────────────────────────────
 
 $router->middleware('hod')->get('/users',              'UserController@index');
-$router->middleware('hod')->get('/users/create',       'UserController@create');
-$router->middleware('hod')->post('/users/create',      'UserController@store');
+$router->middleware('admin')->get('/users/create',       'UserController@create');
+$router->middleware('admin')->post('/users/create',      'UserController@store');
 $router->middleware('hod')->get('/users/{id}',         'UserController@show');
 $router->middleware('hod')->get('/users/{id}/edit',    'UserController@edit');
 $router->middleware('hod')->post('/users/{id}/edit',   'UserController@update');
