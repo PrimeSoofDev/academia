@@ -33,7 +33,7 @@ $totalPoints = 0;
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Graduation Status</p>
                 <span class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider 
                     <?= ($user['graduation_status'] ?? 'enrolled') === 'graduated' ? 'bg-emerald-500 text-white' : 'bg-brand-500 text-white' ?>">
-                    <?= strtoupper($user['graduation_status'] ?: 'Enrolled') ?>
+                    <?= strtoupper($user['graduation_status'] ?? 'Enrolled') ?>
                 </span>
             </div>
         </div>
