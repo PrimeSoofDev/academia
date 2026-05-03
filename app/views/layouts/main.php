@@ -34,6 +34,18 @@ function navActive($path, $current) {
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
+        /* Sidebar Collapse States */
+        .sidebar-collapsed { width: 80px !important; }
+        .sidebar-collapsed .logo-text, 
+        .sidebar-collapsed .nav-label,
+        .sidebar-collapsed .profile-info,
+        .sidebar-collapsed .section-header { display: none !important; }
+        .sidebar-collapsed .logo-icon { margin: 0 auto !important; }
+        .sidebar-collapsed .nav-link { justify-content: center !important; padding-left: 0 !important; padding-right: 0 !important; }
+        .sidebar-collapsed .nav-link svg { margin: 0 !important; }
+        .sidebar-collapsed .profile-card { padding: 12px !important; justify-content: center !important; }
+        .sidebar-collapsed + main { padding-left: 80px !important; }
+
         @media print { .no-print { display: none !important; } }
         
         /* Mobile Sidebar State */
@@ -58,9 +70,23 @@ function navActive($path, $current) {
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
-            sidebar.classList.toggle('mobile-hidden');
-            overlay.classList.toggle('hidden');
+            if (window.innerWidth < 1024) {
+                sidebar.classList.toggle('mobile-hidden');
+                overlay.classList.toggle('hidden');
+            } else {
+                sidebar.classList.toggle('sidebar-collapsed');
+                const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+            }
         }
+
+        // Apply state on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (isCollapsed && window.innerWidth >= 1024) {
+                document.getElementById('sidebar').classList.add('sidebar-collapsed');
+            }
+        });
     </script>
 </head>
 <body class="h-full text-slate-900">
@@ -70,22 +96,27 @@ function navActive($path, $current) {
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[45] hidden lg:hidden transition-all duration-300"></div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 sidebar-premium z-50 shadow-2xl md:translate-x-0 mobile-hidden transform transition-transform duration-300 flex flex-col h-full">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 sidebar-premium z-50 shadow-2xl md:translate-x-0 mobile-hidden transform transition-all duration-300 flex flex-col h-full">
         <!-- Logo -->
-        <div class="flex items-center gap-4 px-8 py-10">
-            <div class="w-12 h-12 bg-gradient-to-tr from-brand-600 to-brand-400 rounded-2xl flex items-center justify-center shadow-lg shadow-brand-500/30 transform rotate-3">
+        <div class="flex items-center gap-4 px-8 py-10 relative">
+            <div class="logo-icon w-12 h-12 bg-gradient-to-tr from-brand-600 to-brand-400 rounded-2xl flex items-center justify-center shadow-lg shadow-brand-500/30 transform rotate-3 flex-shrink-0">
                 <span class="text-white font-black text-2xl">A</span>
             </div>
-            <div>
+            <div class="logo-text">
                 <h1 class="text-2xl font-black tracking-tight text-white leading-none">ACADEMIA</h1>
                 <p class="text-[10px] font-bold text-brand-400 uppercase tracking-[0.2em] mt-1.5">SaaS University</p>
             </div>
+            
+            <!-- Desktop Collapse Toggle -->
+            <button onclick="toggleSidebar()" class="hidden lg:flex absolute -right-3 top-12 w-6 h-6 bg-slate-800 border border-white/10 rounded-full items-center justify-center text-white hover:bg-brand-500 transition-colors z-50">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg>
+            </button>
         </div>
 
         <!-- User Profile Quick View -->
         <div class="px-5 mb-8">
-            <div class="group relative bg-white/5 rounded-[2rem] p-5 border border-white/10 backdrop-blur-sm flex items-center gap-4 hover:bg-white/10 transition-all duration-300">
-                <div class="w-14 h-14 rounded-2xl bg-slate-800 overflow-hidden ring-2 ring-brand-500/20 p-0.5 group-hover:ring-brand-500/50 transition-all">
+            <div class="profile-card group relative bg-white/5 rounded-[2rem] p-5 border border-white/10 backdrop-blur-sm flex items-center gap-4 hover:bg-white/10 transition-all duration-300">
+                <div class="w-14 h-14 rounded-2xl bg-slate-800 overflow-hidden ring-2 ring-brand-500/20 p-0.5 group-hover:ring-brand-500/50 transition-all flex-shrink-0">
                     <?php if (!empty($_SESSION['auth']['profile_image'])): ?>
                         <img src="<?= url($_SESSION['auth']['profile_image']) ?>" class="w-full h-full object-cover rounded-xl">
                     <?php else: ?>
@@ -94,7 +125,7 @@ function navActive($path, $current) {
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="min-w-0 flex-1">
+                <div class="profile-info min-w-0 flex-1">
                     <p class="text-sm font-bold text-white truncate"><?= htmlspecialchars($_SESSION['auth']['name'] ?? 'User') ?></p>
                     <div class="flex items-center gap-2 mt-1">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
@@ -114,7 +145,7 @@ function navActive($path, $current) {
             <!-- MAIN SECTION -->
             <a href="<?= url('/dashboard') ?>" class="nav-link <?= navActive('/dashboard', $currentPath) ?> flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold tracking-wide">
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                <span>Dashboard</span>
+                <span class="nav-label">Dashboard</span>
             </a>
 
             <!-- ACADEMIC STAFF SECTION -->
