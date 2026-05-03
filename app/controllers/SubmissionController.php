@@ -7,6 +7,8 @@
 require_once ROOT_PATH . '/app/core/Controller.php';
 require_once ROOT_PATH . '/app/models/AcademicSubmission.php';
 require_once ROOT_PATH . '/app/models/Course.php';
+require_once ROOT_PATH . '/app/models/User.php';
+require_once ROOT_PATH . '/app/models/Department.php';
 require_once ROOT_PATH . '/app/models/Notification.php';
 
 class SubmissionController extends Controller
