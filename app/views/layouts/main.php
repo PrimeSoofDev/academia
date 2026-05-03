@@ -32,7 +32,6 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
 
-        /* Sidebar active link */
         .nav-link.active {
             background: rgba(99,102,241,0.15);
             color: #818cf8;
@@ -43,19 +42,15 @@
             color: #e2e8f0;
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
 
-        /* Card hover */
         .stat-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
         .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
 
-        /* Sidebar transition */
         #sidebar { transition: width 0.25s ease; }
 
-        /* Flash message animation */
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-10px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -68,6 +63,16 @@
 <?php $authUser = Auth::user() ?? $_SESSION['auth'] ?? []; ?>
 <?php $currentRole = $authUser['role'] ?? 'student'; ?>
 <?php $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); ?>
+
+<?php
+// Helper: is nav item active?
+function navActive(string $href, string $currentPath): string {
+    if ($href === '/dashboard') {
+        return ($currentPath === '/dashboard' || $currentPath === '/') ? 'active' : '';
+    }
+    return str_starts_with($currentPath, $href) ? 'active' : '';
+}
+?>
 
 <!-- ═══════════════════════════════════════════════
      SIDEBAR
@@ -107,68 +112,121 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="flex-1 px-3 py-4 space-y-1">
+    <nav class="flex-1 px-3 py-4 space-y-0.5">
 
-        <?php
-        // Build navigation items based on role
-        $navItems = [
-            ['href' => '/dashboard', 'label' => 'Dashboard', 'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', 'roles' => []],
-        ];
-
-        // VC / Superadmin
-        if (in_array($currentRole, ['superadmin', 'vc', 'dean', 'hod'])):
-            $navItems[] = ['href' => '/faculties', 'label' => 'Faculties', 'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', 'roles' => []];
-            $navItems[] = ['href' => '/departments', 'label' => 'Departments', 'icon' => 'M4 6h16M4 10h16M4 14h16M4 18h16', 'roles' => []];
-        endif;
-
-        if (in_array($currentRole, ['superadmin', 'vc', 'dean', 'hod', 'lecturer'])):
-            $navItems[] = ['href' => '/courses', 'label' => 'Courses', 'icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', 'roles' => []];
-        endif;
-
-        if (in_array($currentRole, ['superadmin', 'vc', 'dean', 'hod'])):
-            $navItems[] = ['href' => '/users', 'label' => 'Users', 'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z', 'roles' => []];
-        endif;
-
-        if ($currentRole === 'student'):
-            $navItems[] = ['href' => '/my-courses', 'label' => 'My Courses', 'icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', 'roles' => []];
-            $navItems[] = ['href' => '/results', 'label' => 'Results', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', 'roles' => []];
-        endif;
-
-        // Admin units — visible to staff & above
-        if (in_array($currentRole, ['superadmin', 'vc', 'staff'])):
-        ?>
-            <div class="pt-3 pb-1">
-                <p class="text-slate-500 text-[10px] font-semibold uppercase tracking-widest px-3">Admin Units</p>
-            </div>
-            <?php
-            $units = [
-                ['href' => '/registry', 'label' => 'Registry',    'emoji' => '📋'],
-                ['href' => '/bursary',  'label' => 'Bursary',     'emoji' => '💰'],
-                ['href' => '/library',  'label' => 'Library',     'emoji' => '📚'],
-            ];
-            foreach ($units as $unit): ?>
-                <a href="<?= url($unit['href']) ?>"
-                   class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
-                    <span class="text-base"><?= $unit['emoji'] ?></span>
-                    <span><?= $unit['label'] ?></span>
-                </a>
-            <?php endforeach;
-        endif; ?>
-
-        <div class="pt-3 pb-1">
-            <p class="text-slate-500 text-[10px] font-semibold uppercase tracking-widest px-3">Account</p>
-        </div>
-
-        <?php foreach ($navItems as $item): ?>
-        <a href="<?= url($item['href']) ?>"
-           id="nav-<?= ltrim($item['href'], '/') ?: 'dashboard' ?>"
-           class="nav-link <?= $currentPath === $item['href'] ? 'active' : '' ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
+        <!-- ── MAIN ── -->
+        <a href="<?= url('/dashboard') ?>"
+           class="nav-link <?= navActive('/dashboard', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="<?= $item['icon'] ?>"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
             </svg>
-            <span><?= $item['label'] ?></span>
+            <span>Dashboard</span>
         </a>
-        <?php endforeach; ?>
+
+        <!-- ── ACADEMIC (lecturers and above) ── -->
+        <?php if (in_array($currentRole, ['superadmin', 'vc', 'dean', 'hod', 'lecturer'])): ?>
+        <div class="pt-4 pb-1"><p class="text-slate-500 text-[10px] font-semibold uppercase tracking-widest px-3">Academic</p></div>
+
+        <?php if (in_array($currentRole, ['superadmin', 'vc', 'dean', 'hod'])): ?>
+        <a href="<?= url('/faculties') ?>"
+           class="nav-link <?= navActive('/faculties', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+            <span>Faculties</span>
+        </a>
+
+        <a href="<?= url('/departments') ?>"
+           class="nav-link <?= navActive('/departments', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+            </svg>
+            <span>Departments</span>
+        </a>
+        <?php endif; ?>
+
+        <a href="<?= url('/courses') ?>"
+           class="nav-link <?= navActive('/courses', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+            <span>Courses</span>
+        </a>
+
+        <a href="<?= url('/results') ?>"
+           class="nav-link <?= navActive('/results', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+            </svg>
+            <span>Results Entry</span>
+        </a>
+        <?php endif; ?>
+
+        <!-- ── STUDENT PORTAL ── -->
+        <?php if ($currentRole === 'student'): ?>
+        <div class="pt-4 pb-1"><p class="text-slate-500 text-[10px] font-semibold uppercase tracking-widest px-3">Student Portal</p></div>
+
+        <a href="<?= url('/my-courses') ?>"
+           class="nav-link <?= navActive('/my-courses', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+            <span>My Courses</span>
+        </a>
+
+        <a href="<?= url('/results') ?>"
+           class="nav-link <?= navActive('/results', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+            </svg>
+            <span>My Results</span>
+        </a>
+        <?php endif; ?>
+
+        <!-- ── ADMINISTRATION (HOD and above) ── -->
+        <?php if (in_array($currentRole, ['superadmin', 'vc', 'dean', 'hod'])): ?>
+        <div class="pt-4 pb-1"><p class="text-slate-500 text-[10px] font-semibold uppercase tracking-widest px-3">Administration</p></div>
+
+        <a href="<?= url('/users') ?>"
+           class="nav-link <?= navActive('/users', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span>Users</span>
+        </a>
+        <?php endif; ?>
+
+        <!-- ── ADMIN UNITS (Registry / Bursary / Library) ── -->
+        <?php if (in_array($currentRole, ['superadmin', 'vc', 'staff'])): ?>
+        <div class="pt-4 pb-1"><p class="text-slate-500 text-[10px] font-semibold uppercase tracking-widest px-3">Admin Units</p></div>
+
+        <a href="<?= url('/registry') ?>"
+           class="nav-link <?= navActive('/registry', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
+            <span class="w-5 text-center text-base">📋</span>
+            <span>Registry</span>
+        </a>
+        <a href="<?= url('/bursary') ?>"
+           class="nav-link <?= navActive('/bursary', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
+            <span class="w-5 text-center text-base">💰</span>
+            <span>Bursary</span>
+        </a>
+        <a href="<?= url('/library') ?>"
+           class="nav-link <?= navActive('/library', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
+            <span class="w-5 text-center text-base">📚</span>
+            <span>Library</span>
+        </a>
+        <?php endif; ?>
+
+        <!-- ── ACCOUNT ── -->
+        <div class="pt-4 pb-1"><p class="text-slate-500 text-[10px] font-semibold uppercase tracking-widest px-3">Account</p></div>
+
+        <a href="<?= url('/profile') ?>"
+           class="nav-link <?= navActive('/profile', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            <span>My Profile</span>
+        </a>
 
     </nav>
 
@@ -201,7 +259,7 @@
                 </svg>
             </button>
 
-            <!-- Page title -->
+            <!-- Page title & breadcrumb -->
             <div>
                 <h1 class="text-slate-800 font-semibold text-base"><?= htmlspecialchars($pageTitle ?? 'Dashboard') ?></h1>
                 <?php if (!empty($breadcrumb)): ?>
@@ -219,9 +277,8 @@
             </div>
         </div>
 
-        <!-- Right: actions & profile -->
+        <!-- Right: profile chip -->
         <div class="flex items-center gap-3">
-            <!-- Notification bell -->
             <button class="relative p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
@@ -230,7 +287,6 @@
                 <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
 
-            <!-- Profile chip -->
             <div class="flex items-center gap-2 bg-slate-100 rounded-xl px-3 py-1.5 cursor-pointer hover:bg-slate-200 transition-colors">
                 <div class="w-7 h-7 rounded-full bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs">
                     <?= strtoupper(substr($authUser['name'] ?? 'U', 0, 1)) ?>
@@ -247,12 +303,22 @@
     <?php if (!empty($_SESSION['flash'])): ?>
     <?php $flash = $_SESSION['flash']; unset($_SESSION['flash']); ?>
     <div class="flash-msg mx-6 mt-4 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2
-        <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200' ?>">
+        <?php
+        $flashColors = [
+            'success' => 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+            'error'   => 'bg-red-50 text-red-700 border border-red-200',
+            'info'    => 'bg-blue-50 text-blue-700 border border-blue-200',
+            'warning' => 'bg-amber-50 text-amber-700 border border-amber-200',
+        ];
+        echo $flashColors[$flash['type']] ?? $flashColors['info'];
+        ?>">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <?php if ($flash['type'] === 'success'): ?>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            <?php else: ?>
+            <?php elseif ($flash['type'] === 'error'): ?>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            <?php else: ?>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             <?php endif; ?>
         </svg>
         <?= htmlspecialchars($flash['message']) ?>
@@ -271,15 +337,14 @@
 </div>
 
 <script>
-    // Auto-highlight active nav link based on current path
-    document.addEventListener('DOMContentLoaded', () => {
-        const currentPath = '<?= url($currentPath) ?>';
-        document.querySelectorAll('.nav-link').forEach(link => {
-            if (link.getAttribute('href') === currentPath) {
-                link.classList.add('active');
-            }
-        });
+// tableSearch helper used across views
+function tableSearch(inputId, tableId) {
+    const query = document.getElementById(inputId).value.toLowerCase();
+    const rows  = document.querySelectorAll('#' + tableId + ' tbody tr');
+    rows.forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
     });
+}
 </script>
 
 </body>
