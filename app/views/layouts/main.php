@@ -78,7 +78,7 @@ function navActive(string $href, string $currentPath): string {
      SIDEBAR
 ═══════════════════════════════════════════════ -->
 <aside id="sidebar"
-       class="w-64 flex-shrink-0 bg-slate-900 flex flex-col h-screen overflow-y-auto relative z-30">
+       class="w-64 flex-shrink-0 bg-slate-900 flex flex-col h-screen overflow-visible relative z-30">
 
     <!-- Logo -->
     <div class="flex items-center gap-3 px-6 py-5 border-b border-slate-800">
@@ -96,11 +96,10 @@ function navActive(string $href, string $currentPath): string {
         </div>
     </div>
 
-    <!-- User Info Card (clickable → opens popup) -->
-    <div class="px-4 py-4 border-b border-slate-800 relative" id="sidebarProfileWrapper">
+    <!-- User Info Card (hover → drops down) -->
+    <div class="px-4 py-4 border-b border-slate-800 relative group/profile" id="sidebarProfileWrapper">
 
-        <button onclick="toggleSidebarProfile()"
-                class="w-full bg-slate-800/60 hover:bg-slate-700/60 rounded-xl p-3 flex items-center gap-3 transition-colors focus:outline-none group">
+        <div class="w-full bg-slate-800/60 group-hover/profile:bg-slate-700/60 rounded-xl p-3 flex items-center gap-3 transition-colors cursor-pointer">
             <div class="w-9 h-9 rounded-full bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                 <?= strtoupper(substr($authUser['name'] ?? 'U', 0, 1)) ?>
             </div>
@@ -111,14 +110,14 @@ function navActive(string $href, string $currentPath): string {
                 </span>
             </div>
             <!-- Chevron -->
-            <svg id="sidebarChevron" class="w-3.5 h-3.5 text-slate-500 group-hover:text-slate-300 transition-all duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-3.5 h-3.5 text-slate-500 group-hover/profile:text-slate-300 group-hover/profile:rotate-180 transition-all duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
             </svg>
-        </button>
+        </div>
 
-        <!-- Popup Panel (opens UPWARD from the card) -->
-        <div id="sidebarProfileDropdown"
-             class="hidden absolute left-4 right-4 bottom-full mb-2 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50">
+        <!-- Dropdown Panel (opens DOWNWARD on hover) -->
+        <div class="invisible opacity-0 group-hover/profile:visible group-hover/profile:opacity-100 transition-all duration-200
+                    absolute left-0 right-0 top-full mt-1 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50">
 
             <!-- Header -->
             <div class="px-4 py-3 bg-gradient-to-r from-brand-50 to-indigo-50 border-b border-slate-100">
@@ -183,9 +182,8 @@ function navActive(string $href, string $currentPath): string {
         </div>
     </div>
 
-
     <!-- Navigation -->
-    <nav class="flex-1 px-3 py-4 space-y-0.5">
+    <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
 
         <!-- ── MAIN ── -->
         <a href="<?= url('/dashboard') ?>"
@@ -360,11 +358,9 @@ function navActive(string $href, string $currentPath): string {
                 <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
 
-            <!-- Profile dropdown trigger -->
-            <div class="relative" id="profileDropdownWrapper">
-                <button id="profileDropdownBtn"
-                        onclick="toggleProfileDropdown()"
-                        class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 rounded-xl px-3 py-1.5 cursor-pointer transition-colors focus:outline-none">
+            <!-- Profile dropdown trigger (hover → drops down) -->
+            <div class="relative group/nav-profile" id="profileDropdownWrapper">
+                <div class="flex items-center gap-2 bg-slate-100 group-hover/nav-profile:bg-slate-200 rounded-xl px-3 py-1.5 cursor-pointer transition-colors focus:outline-none">
                     <div class="w-7 h-7 rounded-full bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs">
                         <?= strtoupper(substr($authUser['name'] ?? 'U', 0, 1)) ?>
                     </div>
@@ -373,14 +369,15 @@ function navActive(string $href, string $currentPath): string {
                         <p class="text-slate-400 text-[10px] capitalize mt-0.5"><?= htmlspecialchars($currentRole) ?></p>
                     </div>
                     <!-- Chevron -->
-                    <svg id="profileChevron" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3.5 h-3.5 text-slate-400 group-hover/nav-profile:rotate-180 transition-transform duration-200 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
-                </button>
+                </div>
 
-                <!-- Dropdown Panel -->
+                <!-- Dropdown Panel (opens on hover) -->
                 <div id="profileDropdown"
-                     class="hidden absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
+                     class="invisible opacity-0 group-hover/nav-profile:visible group-hover/nav-profile:opacity-100 transition-all duration-200
+                            absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
 
                     <!-- Header -->
                     <div class="px-4 py-3 bg-gradient-to-r from-brand-50 to-indigo-50 border-b border-slate-100">
@@ -494,55 +491,6 @@ function tableSearch(inputId, tableId) {
         row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
     });
 }
-
-// Profile dropdown (top navbar)
-function toggleProfileDropdown() {
-    const dropdown = document.getElementById('profileDropdown');
-    const chevron  = document.getElementById('profileChevron');
-    const isOpen   = !dropdown.classList.contains('hidden');
-    if (isOpen) {
-        dropdown.classList.add('hidden');
-        chevron.style.transform = 'rotate(0deg)';
-    } else {
-        dropdown.classList.remove('hidden');
-        chevron.style.transform = 'rotate(180deg)';
-    }
-}
-
-// Profile popup (sidebar)
-function toggleSidebarProfile() {
-    const dropdown = document.getElementById('sidebarProfileDropdown');
-    const chevron  = document.getElementById('sidebarChevron');
-    const isOpen   = !dropdown.classList.contains('hidden');
-    if (isOpen) {
-        dropdown.classList.add('hidden');
-        chevron.style.transform = 'rotate(0deg)';
-    } else {
-        dropdown.classList.remove('hidden');
-        chevron.style.transform = 'rotate(180deg)';
-    }
-}
-
-// Close both dropdowns when clicking outside
-document.addEventListener('click', function(e) {
-    // Navbar dropdown
-    const navWrapper  = document.getElementById('profileDropdownWrapper');
-    const navDropdown = document.getElementById('profileDropdown');
-    if (navWrapper && navDropdown && !navWrapper.contains(e.target)) {
-        navDropdown.classList.add('hidden');
-        const c = document.getElementById('profileChevron');
-        if (c) c.style.transform = 'rotate(0deg)';
-    }
-
-    // Sidebar popup
-    const sideWrapper  = document.getElementById('sidebarProfileWrapper');
-    const sideDropdown = document.getElementById('sidebarProfileDropdown');
-    if (sideWrapper && sideDropdown && !sideWrapper.contains(e.target)) {
-        sideDropdown.classList.add('hidden');
-        const c = document.getElementById('sidebarChevron');
-        if (c) c.style.transform = 'rotate(0deg)';
-    }
-});
 </script>
 
 </body>
