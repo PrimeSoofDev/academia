@@ -6,6 +6,7 @@
 
 require_once ROOT_PATH . '/app/core/Controller.php';
 require_once ROOT_PATH . '/app/core/Auth.php';
+require_once ROOT_PATH . '/app/core/Database.php';
 
 class RecordController extends Controller
 {
@@ -20,7 +21,7 @@ class RecordController extends Controller
         $user = Auth::user();
 
         // Fetch all results for this student
-        $results = $this->db()->raw("
+        $results = Database::getInstance()->fetchAll("
             SELECT r.*, c.code as course_code, c.title as course_title, c.credit_units, s.name as session_name
             FROM results r
             JOIN courses c ON r.course_id = c.id
@@ -51,10 +52,10 @@ class RecordController extends Controller
         }
 
         // Fetch Registrar and VC signatures/stamps
-        $university = $this->db()->raw("SELECT * FROM tenants WHERE id = :id", [':id' => $tenantId])[0] ?? [];
+        $university = Database::getInstance()->fetchAll("SELECT * FROM tenants WHERE id = :id", [':id' => $tenantId])[0] ?? [];
         
         // Find VC and Registrar
-        $officials = $this->db()->raw("
+        $officials = Database::getInstance()->fetchAll("
             SELECT name, role, signature_path, stamp_path 
             FROM users 
             WHERE tenant_id = :tenant_id AND (role = 'vc' OR unit_id IN (SELECT id FROM units WHERE name = 'Registry'))
@@ -67,7 +68,5 @@ class RecordController extends Controller
         ]);
     }
 
-    private function db() {
-        return new Model();
-    }
+    // Removed incorrect Model instantiation helper
 }
