@@ -26,34 +26,36 @@ $breadcrumb = [
             </div>
 
             <div class="p-8 space-y-6">
-                <!-- File View -->
-                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-2xl">
-                            📄
+                <!-- Content View -->
+                <?php if ($submission['file_path']): ?>
+                    <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-2xl shadow-sm">
+                                📄
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-800">Submitted Document</p>
+                                <p class="text-xs text-slate-500">File-based Academic Material</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="font-bold text-slate-800">Submitted Document</p>
-                            <p class="text-xs text-slate-500">Academic Material Reference</p>
-                        </div>
+                        <a href="<?= url($submission['file_path']) ?>" target="_blank" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            Download / View
+                        </a>
                     </div>
-                    <?php if ($submission['file_path']): ?>
-                    <a href="<?= url($submission['file_path']) ?>" target="_blank" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                        Download / View
-                    </a>
-                    <?php else: ?>
-                        <span class="text-xs text-slate-400 italic">No file uploaded</span>
-                    <?php endif; ?>
-                </div>
+                <?php endif; ?>
 
                 <?php if ($submission['content']): ?>
                 <div>
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Lecturer Remarks</h4>
-                    <div class="p-5 rounded-2xl bg-slate-50 text-slate-700 text-sm italic border border-slate-100">
-                        "<?= htmlspecialchars($submission['content']) ?>"
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Electronic Content / Entry</h4>
+                    <div class="p-6 rounded-2xl bg-slate-50 text-slate-700 text-sm border border-slate-100 font-mono whitespace-pre-wrap leading-relaxed shadow-inner">
+                        <?= htmlspecialchars($submission['content']) ?>
                     </div>
                 </div>
+                <?php endif; ?>
+
+                <?php if (!$submission['file_path'] && !$submission['content']): ?>
+                    <div class="p-8 text-center text-slate-400 italic">No content or file provided.</div>
                 <?php endif; ?>
 
                 <?php if ($submission['remarks']): ?>

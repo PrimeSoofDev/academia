@@ -58,9 +58,11 @@ class SubmissionController extends Controller
 
         // Get courses assigned to this lecturer
         $courses = $this->courseModel->where(['lecturer_id' => $userId, 'tenant_id' => $tenantId]);
+        $user = (new User())->find($userId, $tenantId);
 
         $this->view('submissions.create', [
-            'courses' => $courses
+            'courses' => $courses,
+            'user'    => $user
         ]);
     }
 
