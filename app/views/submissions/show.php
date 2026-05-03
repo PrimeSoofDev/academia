@@ -48,9 +48,45 @@ $breadcrumb = [
                 <?php if ($submission['content']): ?>
                 <div>
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Electronic Content / Entry</h4>
-                    <div class="p-6 rounded-2xl bg-slate-50 text-slate-700 text-sm border border-slate-100 font-mono whitespace-pre-wrap leading-relaxed shadow-inner">
-                        <?= htmlspecialchars($submission['content']) ?>
-                    </div>
+                    <?php 
+                    $data = json_decode($submission['content'], true);
+                    if ($data && isset($data['type']) && $data['type'] === 'table'): 
+                    ?>
+                        <div class="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 font-bold text-slate-500 uppercase tracking-widest">Student ID</th>
+                                        <th class="px-4 py-3 font-bold text-slate-500 uppercase tracking-widest">Student Name</th>
+                                        <th class="px-4 py-3 text-center font-bold text-slate-500 uppercase tracking-widest">CA</th>
+                                        <th class="px-4 py-3 text-center font-bold text-slate-500 uppercase tracking-widest">Exam</th>
+                                        <th class="px-4 py-3 text-center font-bold text-slate-500 uppercase tracking-widest">Total</th>
+                                        <th class="px-4 py-3 text-center font-bold text-slate-500 uppercase tracking-widest">Grade</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 bg-white">
+                                    <?php foreach ($data['data'] as $row): ?>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-4 py-3 font-mono text-slate-600"><?= htmlspecialchars($row['id']) ?></td>
+                                        <td class="px-4 py-3 font-bold text-slate-800"><?= htmlspecialchars($row['name']) ?></td>
+                                        <td class="px-4 py-3 text-center text-slate-600"><?= htmlspecialchars($row['ca']) ?></td>
+                                        <td class="px-4 py-3 text-center text-slate-600"><?= htmlspecialchars($row['exam']) ?></td>
+                                        <td class="px-4 py-3 text-center font-extrabold text-slate-900"><?= htmlspecialchars($row['total']) ?></td>
+                                        <td class="px-4 py-3 text-center">
+                                            <span class="px-2.5 py-1 rounded-lg font-black <?= (int)$row['total'] >= 40 ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-700 border border-red-100' ?>">
+                                                <?= htmlspecialchars($row['grade']) ?>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <div class="p-6 rounded-2xl bg-slate-50 text-slate-700 text-sm border border-slate-100 font-mono whitespace-pre-wrap leading-relaxed shadow-inner">
+                            <?= htmlspecialchars($submission['content']) ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 <?php endif; ?>
 
