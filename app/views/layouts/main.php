@@ -251,6 +251,9 @@ function navActive(string $href, string $currentPath): string {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
             </svg>
             <span>Departments</span>
+        </a>
+        <?php endif; ?>
+
         <a href="<?= url('/submissions') ?>"
            class="nav-link <?= navActive('/submissions', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -258,7 +261,6 @@ function navActive(string $href, string $currentPath): string {
             </svg>
             <span>Academic Materials</span>
         </a>
-        <?php endif; ?>
 
         <a href="<?= url('/courses') ?>"
            class="nav-link <?= navActive('/courses', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
