@@ -9,8 +9,8 @@ $currentRole = $_SESSION['auth']['role'] ?? 'student';
 
 function navActive($path, $current) {
     return (str_starts_with($current, $path)) 
-        ? 'bg-brand-500/10 text-brand-400 border-r-4 border-brand-500 shadow-[0_0_20px_rgba(14,165,233,0.1)]' 
-        : 'text-slate-400 hover:bg-white/5 hover:text-white';
+        ? 'bg-brand-500/10 text-brand-400 border-l-4 border-brand-500 shadow-[0_0_20px_rgba(14,165,233,0.1)]' 
+        : 'text-slate-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent';
 }
 ?>
 <!DOCTYPE html>
@@ -24,10 +24,21 @@ function navActive($path, $current) {
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
         h1, h2, h3, .font-heading { font-family: 'Outfit', sans-serif; }
-        .sidebar-premium { background: #0f172a; } /* Slate 900 */
+        .sidebar-premium { background: #0f172a; transition: all 0.3s ease; }
         .glass-header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
         .nav-link { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
         @media print { .no-print { display: none !important; } }
+        
+        /* Mobile Sidebar State */
+        #sidebar.mobile-hidden { transform: translateX(-100%); }
+        #sidebar-overlay.hidden { display: none; }
     </style>
     <script>
         tailwind.config = {
@@ -43,13 +54,23 @@ function navActive($path, $current) {
                 }
             }
         }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('mobile-hidden');
+            overlay.classList.toggle('hidden');
+        }
     </script>
 </head>
 <body class="h-full text-slate-900">
 
 <div class="flex h-full no-print">
+    <!-- Mobile Sidebar Overlay -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[45] hidden lg:hidden transition-all duration-300"></div>
+
     <!-- Sidebar -->
-    <aside class="hidden lg:flex lg:flex-col w-72 sidebar-premium h-full fixed inset-y-0 z-50 shadow-2xl">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 sidebar-premium z-50 shadow-2xl lg:static lg:translate-x-0 mobile-hidden transform transition-transform duration-300 flex flex-col h-full">
         <!-- Logo -->
         <div class="flex items-center gap-4 px-8 py-10">
             <div class="w-12 h-12 bg-gradient-to-tr from-brand-600 to-brand-400 rounded-2xl flex items-center justify-center shadow-lg shadow-brand-500/30 transform rotate-3">
@@ -195,9 +216,9 @@ function navActive($path, $current) {
     <!-- Main Content Area -->
     <main class="lg:pl-72 flex-1 min-h-screen">
         <!-- Top Header -->
-        <header class="glass-header sticky top-0 z-40 px-10 py-5 flex items-center justify-between no-print">
+        <header class="glass-header sticky top-0 z-40 px-6 sm:px-10 py-5 flex items-center justify-between no-print">
             <div class="flex items-center gap-6">
-                <button class="lg:hidden p-3 text-slate-500 hover:bg-slate-100 rounded-2xl transition-all">
+                <button onclick="toggleSidebar()" class="lg:hidden p-3 text-slate-500 hover:bg-slate-100 rounded-2xl transition-all">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
                 <div class="hidden md:flex items-center gap-3 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
