@@ -155,9 +155,28 @@ $roleBadge = [
                     </div>
                 </div>
 
-                <div class="pt-4 flex items-center justify-end border-t border-slate-100">
-                    <button type="submit" class="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm">
-                        Upload Pictures
+                <div class="pt-2">
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Digital Signature (for Results/Exams)</label>
+                    <div class="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-brand-300 transition-colors bg-slate-50">
+                        <div class="w-32 h-16 rounded-lg overflow-hidden bg-white shrink-0 border border-slate-200 flex items-center justify-center">
+                            <?php if ($user['signature_path']): ?>
+                                <img id="sigPreview" src="<?= url($user['signature_path']) ?>" class="max-w-full max-h-full object-contain">
+                            <?php else: ?>
+                                <div id="sigPreviewPlaceholder" class="text-[10px] text-slate-400 font-bold uppercase tracking-widest px-2 text-center">No Signature Uploaded</div>
+                                <img id="sigPreview" class="hidden max-w-full max-h-full object-contain">
+                            <?php endif; ?>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <input type="file" name="signature" accept="image/*" class="text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer w-full"
+                                   onchange="previewImage(this, 'sigPreview', 'sigPreviewPlaceholder')">
+                            <p class="text-[10px] text-slate-400 mt-1">Upload a clear scan of your signature (PNG preferred).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex justify-end">
+                    <button type="submit" class="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-brand-500/20">
+                        Update Pictures & Signature
                     </button>
                 </div>
             </form>
@@ -351,11 +370,17 @@ function checkMatch() {
     }
 }
 
-function previewImage(input, previewId) {
+function previewImage(input, previewId, placeholderId = null) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            document.getElementById(previewId).src = e.target.result;
+            const preview = document.getElementById(previewId);
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+            if (placeholderId) {
+                const placeholder = document.getElementById(placeholderId);
+                if (placeholder) placeholder.classList.add('hidden');
+            }
         }
         reader.readAsDataURL(input.files[0]);
     }

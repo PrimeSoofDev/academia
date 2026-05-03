@@ -8,6 +8,7 @@ require_once ROOT_PATH . '/app/core/Controller.php';
 require_once ROOT_PATH . '/app/models/User.php';
 require_once ROOT_PATH . '/app/models/Faculty.php';
 require_once ROOT_PATH . '/app/models/Department.php';
+require_once ROOT_PATH . '/app/models/Notification.php';
 
 class ProfileController extends Controller
 {
@@ -61,7 +62,7 @@ class ProfileController extends Controller
         $action   = $this->post('action', 'profile');
 
         if ($action === 'images') {
-            // ── Update Profile & Banner Images ──
+            // ── Update Profile, Banner & Signature ──
             $data = [];
             $uploadDir = ROOT_PATH . '/public/uploads/';
 
@@ -69,10 +70,11 @@ class ProfileController extends Controller
             if (!empty($_FILES['profile_image']['name'])) {
                 $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
                 $ext = strtolower(pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION));
-                
                 if (in_array($ext, $allowed)) {
                     $filename = 'profile_' . $userId . '_' . time() . '.' . $ext;
-                    if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $uploadDir . 'profiles/' . $filename)) {
+                    $dir = $uploadDir . 'profiles/';
+                    if (!is_dir($dir)) mkdir($dir, 0777, true);
+                    if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $dir . $filename)) {
                         $data['profile_image'] = '/uploads/profiles/' . $filename;
                     }
                 }
@@ -82,28 +84,39 @@ class ProfileController extends Controller
             if (!empty($_FILES['banner_image']['name'])) {
                 $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
                 $ext = strtolower(pathinfo($_FILES['banner_image']['name'], PATHINFO_EXTENSION));
-
                 if (in_array($ext, $allowed)) {
                     $filename = 'banner_' . $userId . '_' . time() . '.' . $ext;
-                    if (move_uploaded_file($_FILES['banner_image']['tmp_name'], $uploadDir . 'banners/' . $filename)) {
+                    $dir = $uploadDir . 'banners/';
+                    if (!is_dir($dir)) mkdir($dir, 0777, true);
+                    if (move_uploaded_file($_FILES['banner_image']['tmp_name'], $dir . $filename)) {
                         $data['banner_image'] = '/uploads/banners/' . $filename;
+                    }
+                }
+            }
+
+            // Signature Upload
+            if (!empty($_FILES['signature']['name'])) {
+                $allowed = ['jpg', 'jpeg', 'png', 'webp'];
+                $ext = strtolower(pathinfo($_FILES['signature']['name'], PATHINFO_EXTENSION));
+                if (in_array($ext, $allowed)) {
+                    $filename = 'sig_' . $userId . '_' . time() . '.' . $ext;
+                    $sigDir = $uploadDir . 'signatures/';
+                    if (!is_dir($sigDir)) mkdir($sigDir, 0777, true);
+                    if (move_uploaded_file($_FILES['signature']['tmp_name'], $sigDir . $filename)) {
+                        $data['signature_path'] = '/uploads/signatures/' . $filename;
                     }
                 }
             }
 
             if (!empty($data)) {
                 $this->userModel->update($userId, $data, $tenantId);
-                // Update session if profile image changed
                 if (isset($data['profile_image'])) {
                     $_SESSION['auth']['profile_image'] = $data['profile_image'];
                 }
-                
-                // Send notification
-                (new Notification())->send($userId, $tenantId, 'Pictures Updated', 'Your profile/banner images have been successfully changed.', 'success', '/profile');
-
-                $this->flash('success', 'Images updated successfully.');
+                (new Notification())->send($userId, $tenantId, 'Profile Assets Updated', 'Your pictures or signature have been successfully changed.', 'success', '/profile');
+                $this->flash('success', 'Profile assets updated successfully.');
             } else {
-                $this->flash('info', 'No valid images selected.');
+                $this->flash('info', 'No valid files selected.');
             }
             $this->redirect('/profile');
         } elseif ($action === 'password') {
@@ -117,7 +130,6 @@ class ProfileController extends Controller
                 $this->redirect('/profile#password');
             }
 
-            // Verify current password
             $userRow = $this->userModel->find($userId, $tenantId);
             if (!password_verify($current, $userRow['password'])) {
                 $this->flash('error', 'Your current password is incorrect.');
@@ -151,29 +163,17 @@ class ProfileController extends Controller
                 $this->redirect('/profile');
             }
 
-            $data = [
-                'name'          => $name,
-                'email'         => $email,
-                'phone'         => $phone,
-                'gender'        => $this->post('gender') ?: null,
-                'date_of_birth' => $this->post('date_of_birth') ?: null,
-                'address'       => $this->post('address'),
-            ];
+            $this->userModel->update($userId, [
+                'name'  => $name,
+                'email' => $email,
+                'phone' => $phone,
+                'gender'=> $this->post('gender'),
+                'department_id' => $this->post('department_id') ?: null,
+                'faculty_id'    => $this->post('faculty_id')    ?: null,
+            ], $tenantId);
 
-            // Students & academic staff can update their placements
-            $role = Auth::role();
-            if (in_array($role, ['student', 'lecturer', 'hod', 'dean'])) {
-                $data['faculty_id']    = $this->post('faculty_id') ?: null;
-                $data['department_id'] = $this->post('department_id') ?: null;
-            }
-
-            $this->userModel->update($userId, $data, $tenantId);
-
-            // Update the session data so the name in the header refreshes
             $_SESSION['auth']['name'] = $name;
-
-            // Send notification
-            (new Notification())->send($userId, $tenantId, 'Profile Updated', 'Your personal information has been successfully updated.', 'success', '/profile');
+            $_SESSION['auth']['email'] = $email;
 
             $this->flash('success', 'Profile updated successfully.');
             $this->redirect('/profile');

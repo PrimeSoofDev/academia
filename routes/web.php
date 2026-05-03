@@ -112,6 +112,13 @@ $router->middleware('auth')->get('/notifications',            'NotificationContr
 $router->middleware('auth')->post('/notifications/read',      'NotificationController@markRead');
 $router->middleware('auth')->post('/notifications/read-all',  'NotificationController@markAllRead');
 
+// ── Academic Submissions ──
+$router->middleware('auth')->get('/submissions',               'SubmissionController@index');
+$router->middleware('lecturer')->get('/submissions/create',    'SubmissionController@create');
+$router->middleware('lecturer')->post('/submissions/create',   'SubmissionController@store');
+$router->middleware('auth')->get('/submissions/{id}',          'SubmissionController@show');
+$router->middleware('staff')->post('/submissions/{id}/approve', 'SubmissionController@approve');
+
 // ── Campus Live Reporting ──
 $router->middleware('auth')->get('/reports',                  'ReportController@index');
 $router->middleware('student')->post('/reports/create',       'ReportController@store');
