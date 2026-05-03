@@ -70,7 +70,7 @@ function navActive($path, $current) {
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[45] hidden lg:hidden transition-all duration-300"></div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 sidebar-premium z-50 shadow-2xl lg:static lg:translate-x-0 mobile-hidden transform transition-transform duration-300 flex flex-col h-full">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 sidebar-premium z-50 shadow-2xl md:translate-x-0 mobile-hidden transform transition-transform duration-300 flex flex-col h-full">
         <!-- Logo -->
         <div class="flex items-center gap-4 px-8 py-10">
             <div class="w-12 h-12 bg-gradient-to-tr from-brand-600 to-brand-400 rounded-2xl flex items-center justify-center shadow-lg shadow-brand-500/30 transform rotate-3">
@@ -137,7 +137,7 @@ function navActive($path, $current) {
                     <span>Academic Materials</span>
                 </a>
                 <a href="<?= url('/courses') ?>" class="nav-link <?= navActive('/courses', $currentPath) ?> flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold tracking-wide">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.247 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                     <span>Courses</span>
                 </a>
                 <a href="<?= url('/results') ?>" class="nav-link <?= navActive('/results', $currentPath) ?> flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold tracking-wide">
@@ -150,7 +150,7 @@ function navActive($path, $current) {
             <?php if ($currentRole === 'student'): ?>
                 <div class="pt-8 pb-2 px-5"><p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.25em]">Student Portal</p></div>
                 <a href="<?= url('/my-courses') ?>" class="nav-link <?= navActive('/my-courses', $currentPath) ?> flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold tracking-wide">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.247 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                     <span>My Courses</span>
                 </a>
                 <a href="<?= url('/results') ?>" class="nav-link <?= navActive('/results', $currentPath) ?> flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold tracking-wide">
@@ -214,7 +214,7 @@ function navActive($path, $current) {
     </aside>
 
     <!-- Main Content Area -->
-    <main class="lg:pl-72 flex-1 min-h-screen">
+    <main class="md:pl-72 flex-1 min-h-screen transition-all duration-300">
         <!-- Top Header -->
         <header class="glass-header sticky top-0 z-40 px-6 sm:px-10 py-5 flex items-center justify-between no-print">
             <div class="flex items-center gap-6">
