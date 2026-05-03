@@ -111,6 +111,11 @@ $router->middleware('admin')->post('/users/{id}/delete','UserController@destroy'
 $router->middleware('auth')->get('/profile',       'ProfileController@show');
 $router->middleware('auth')->post('/profile',      'ProfileController@update');
 
+// ── Settings ──
+$router->middleware('auth')->get('/settings',          'SettingsController@index');
+$router->middleware('auth')->post('/settings/password', 'SettingsController@updatePassword');
+$router->middleware('auth')->post('/settings/preferences', 'SettingsController@updatePreferences');
+
 // ── Notifications ──
 $router->middleware('auth')->get('/notifications',            'NotificationController@index');
 $router->middleware('auth')->post('/notifications/read',      'NotificationController@markRead');
