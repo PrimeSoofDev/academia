@@ -63,8 +63,8 @@ function navActive($path, $current) {
 
         <!-- User Profile Quick View -->
         <div class="px-5 mb-8">
-            <div class="bg-white/5 rounded-[2rem] p-5 border border-white/10 backdrop-blur-sm flex items-center gap-4">
-                <div class="w-14 h-14 rounded-2xl bg-slate-800 overflow-hidden ring-2 ring-brand-500/20 p-0.5">
+            <div class="group relative bg-white/5 rounded-[2rem] p-5 border border-white/10 backdrop-blur-sm flex items-center gap-4 hover:bg-white/10 transition-all duration-300">
+                <div class="w-14 h-14 rounded-2xl bg-slate-800 overflow-hidden ring-2 ring-brand-500/20 p-0.5 group-hover:ring-brand-500/50 transition-all">
                     <?php if (!empty($_SESSION['auth']['profile_image'])): ?>
                         <img src="<?= url($_SESSION['auth']['profile_image']) ?>" class="w-full h-full object-cover rounded-xl">
                     <?php else: ?>
@@ -73,13 +73,17 @@ function navActive($path, $current) {
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="min-w-0">
+                <div class="min-w-0 flex-1">
                     <p class="text-sm font-bold text-white truncate"><?= htmlspecialchars($_SESSION['auth']['name'] ?? 'User') ?></p>
                     <div class="flex items-center gap-2 mt-1">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest"><?= htmlspecialchars($currentRole) ?></p>
                     </div>
                 </div>
+                <!-- Logout Quick Action -->
+                <a href="<?= url('/logout') ?>" class="opacity-0 group-hover:opacity-100 w-10 h-10 rounded-xl bg-red-500/10 text-red-400 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                </a>
             </div>
         </div>
 
@@ -220,13 +224,35 @@ function navActive($path, $current) {
                     <span class="text-[10px] font-black text-brand-700 uppercase tracking-widest">Live System</span>
                 </div>
                 
-                <div class="flex items-center gap-4 pl-8 border-l border-slate-200">
+                <div class="relative group flex items-center gap-4 pl-8 border-l border-slate-200 cursor-pointer py-2">
                     <div class="text-right hidden sm:block">
                         <p class="text-sm font-black text-slate-900 leading-none"><?= htmlspecialchars($_SESSION['auth']['name'] ?? 'User') ?></p>
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1.5"><?= htmlspecialchars($currentRole) ?></p>
                     </div>
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-600 to-brand-400 flex items-center justify-center text-white font-black shadow-lg shadow-brand-500/20 text-lg">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-600 to-brand-400 flex items-center justify-center text-white font-black shadow-lg shadow-brand-500/20 text-lg group-hover:scale-105 transition-transform">
                         <?= substr($_SESSION['auth']['name'] ?? 'U', 0, 1) ?>
+                    </div>
+
+                    <!-- Dropdown Menu -->
+                    <div class="absolute top-full right-0 mt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50">
+                        <div class="bg-white rounded-3xl shadow-2xl shadow-slate-200 border border-slate-100 overflow-hidden p-2">
+                            <div class="px-4 py-3 border-b border-slate-50 mb-1">
+                                <p class="text-xs font-black text-slate-400 uppercase tracking-widest">Account</p>
+                            </div>
+                            <a href="<?= url('/profile') ?>" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-slate-600 hover:bg-brand-50 hover:text-brand-600 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                <span>My Profile</span>
+                            </a>
+                            <a href="<?= url('/settings') ?>" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-slate-600 hover:bg-brand-50 hover:text-brand-600 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                <span>Settings</span>
+                            </a>
+                            <div class="h-px bg-slate-50 my-1"></div>
+                            <a href="<?= url('/logout') ?>" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-red-500 hover:bg-red-50 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                <span>Sign Out</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
