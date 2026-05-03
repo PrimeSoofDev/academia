@@ -1,0 +1,56 @@
+# ─────────────────────────────────────────────────────────────
+# Academia — Apache Rewrite Rules
+# Location: /public/.htaccess
+#
+# PURPOSE:
+#   Route ALL requests to index.php EXCEPT real files/dirs.
+# ─────────────────────────────────────────────────────────────
+
+Options -Indexes
+Options -MultiViews
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # ⚠️  Adjust this if you move the project.
+    # XAMPP sub-folder: /academia/public/
+    # Domain root:      /
+    RewriteBase /academia/public/
+
+    # ── 1. Allow direct access to real files/directories ─────
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # ── 2. Route everything else to index.php ─────────────────
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+# ── Security headers ─────────────────────────────────────────
+<IfModule mod_headers.c>
+    # Prevent MIME-type sniffing
+    Header set X-Content-Type-Options "nosniff"
+
+    # Block clickjacking
+    Header set X-Frame-Options "SAMEORIGIN"
+
+    # Basic XSS protection (legacy browsers)
+    Header set X-XSS-Protection "1; mode=block"
+
+    # Hide server info
+    Header unset Server
+    Header always unset X-Powered-By
+</IfModule>
+
+# ── Deny direct access to sensitive folders/files ─────────────
+<FilesMatch "\.(env|log|sql|sh|bat|md|git|lock)$">
+    Require all denied
+</FilesMatch>
+
+# ── PHP settings (override if allowed by Apache config) ───────
+<IfModule mod_php.c>
+    php_value upload_max_filesize  20M
+    php_value post_max_size        25M
+    php_value memory_limit         128M
+    php_value max_execution_time   60
+</IfModule>

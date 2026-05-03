@@ -1,0 +1,20 @@
+# ─────────────────────────────────────────────────────────────
+# Academia — ROOT .htaccess
+# Location: /academia/.htaccess  (project root, NOT /public)
+#
+# PURPOSE:
+#   Redirect ALL requests from /academia/ to /academia/public/
+#   This prevents the directory listing and routes traffic correctly.
+# ─────────────────────────────────────────────────────────────
+
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /academia/
+
+    # If the request is NOT already pointing inside /public
+    RewriteCond %{REQUEST_URI} !^/academia/public/
+    # Redirect root to /academia/public/
+    RewriteRule ^(.*)$ public/$1 [R=301,L]
+</IfModule>

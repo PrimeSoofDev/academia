@@ -1,0 +1,132 @@
+<?php
+/**
+ * routes/web.php — Application Route Definitions
+ *
+ * All web routes are registered here.
+ * The $router variable is injected by App::run().
+ *
+ * Route syntax:
+ *   $router->get('/path', 'ControllerName@method');
+ *   $router->post('/path', 'ControllerName@method');
+ *   $router->middleware('auth')->get('/protected', 'SomeController@index');
+ *
+ * Middleware options:
+ *   'auth'      → must be logged in
+ *   'guest'     → must NOT be logged in (for login page)
+ *   'admin'     → superadmin or vc only
+ *   'dean'      → dean and above
+ *   'hod'       → hod and above
+ *   'lecturer'  → lecturer and above
+ */
+
+// ─────────────────────────────────────────────
+// 1. PUBLIC / AUTH ROUTES
+// ─────────────────────────────────────────────
+
+// Redirect root to dashboard (or login if unauthenticated)
+$router->get('/', 'DashboardController@index');
+
+// Show login form
+$router->middleware('guest')->get('/login', 'AuthController@login');
+
+// Process login submission
+$router->middleware('guest')->post('/login', 'AuthController@authenticate');
+
+// Logout
+$router->middleware('auth')->get('/logout', 'AuthController@logout');
+
+
+// ─────────────────────────────────────────────
+// 2. DASHBOARD
+// ─────────────────────────────────────────────
+
+$router->middleware('auth')->get('/dashboard', 'DashboardController@index');
+
+
+// ─────────────────────────────────────────────
+// 3. FACULTY ROUTES (VC / Dean and above)
+// ─────────────────────────────────────────────
+
+$router->middleware('dean')->get('/faculties',             'FacultyController@index');
+$router->middleware('dean')->get('/faculties/create',      'FacultyController@create');
+$router->middleware('dean')->post('/faculties/create',     'FacultyController@store');
+$router->middleware('dean')->get('/faculties/{id}',        'FacultyController@show');
+$router->middleware('dean')->get('/faculties/{id}/edit',   'FacultyController@edit');
+$router->middleware('dean')->post('/faculties/{id}/edit',  'FacultyController@update');
+$router->middleware('admin')->post('/faculties/{id}/delete','FacultyController@destroy');
+
+
+// ─────────────────────────────────────────────
+// 4. DEPARTMENT ROUTES (HOD and above)
+// ─────────────────────────────────────────────
+
+$router->middleware('hod')->get('/departments',              'DepartmentController@index');
+$router->middleware('dean')->get('/departments/create',      'DepartmentController@create');
+$router->middleware('dean')->post('/departments/create',     'DepartmentController@store');
+$router->middleware('hod')->get('/departments/{id}',         'DepartmentController@show');
+$router->middleware('hod')->get('/departments/{id}/edit',    'DepartmentController@edit');
+$router->middleware('hod')->post('/departments/{id}/edit',   'DepartmentController@update');
+$router->middleware('admin')->post('/departments/{id}/delete','DepartmentController@destroy');
+
+
+// ─────────────────────────────────────────────
+// 5. COURSE ROUTES
+// ─────────────────────────────────────────────
+
+$router->middleware('lecturer')->get('/courses',              'CourseController@index');
+$router->middleware('hod')->get('/courses/create',            'CourseController@create');
+$router->middleware('hod')->post('/courses/create',           'CourseController@store');
+$router->middleware('lecturer')->get('/courses/{id}',         'CourseController@show');
+$router->middleware('hod')->get('/courses/{id}/edit',         'CourseController@edit');
+$router->middleware('hod')->post('/courses/{id}/edit',        'CourseController@update');
+$router->middleware('admin')->post('/courses/{id}/delete',    'CourseController@destroy');
+
+// Student course enrollment
+$router->middleware('auth')->get('/my-courses',               'CourseController@myCourses');
+$router->middleware('auth')->post('/courses/{id}/enroll',     'CourseController@enroll');
+
+
+// ─────────────────────────────────────────────
+// 6. USER MANAGEMENT ROUTES
+// ─────────────────────────────────────────────
+
+$router->middleware('hod')->get('/users',              'UserController@index');
+$router->middleware('hod')->get('/users/create',       'UserController@create');
+$router->middleware('hod')->post('/users/create',      'UserController@store');
+$router->middleware('hod')->get('/users/{id}',         'UserController@show');
+$router->middleware('hod')->get('/users/{id}/edit',    'UserController@edit');
+$router->middleware('hod')->post('/users/{id}/edit',   'UserController@update');
+$router->middleware('admin')->post('/users/{id}/delete','UserController@destroy');
+
+
+// ─────────────────────────────────────────────
+// 7. PROFILE
+// ─────────────────────────────────────────────
+
+$router->middleware('auth')->get('/profile',       'ProfileController@show');
+$router->middleware('auth')->post('/profile',      'ProfileController@update');
+$router->middleware('auth')->get('/results',       'ResultController@index');
+
+
+// ─────────────────────────────────────────────
+// 8. ADMINISTRATIVE UNIT ROUTES
+// ─────────────────────────────────────────────
+
+// Registry
+$router->middleware('auth')->get('/registry',             'RegistryController@index');
+$router->middleware('staff')->get('/registry/students',   'RegistryController@students');
+$router->middleware('staff')->get('/registry/staff',      'RegistryController@staff');
+$router->middleware('staff')->get('/registry/sessions',   'RegistryController@sessions');
+$router->middleware('staff')->post('/registry/sessions',  'RegistryController@storeSession');
+$router->middleware('staff')->post('/registry/sessions/set-current', 'RegistryController@setCurrentSession');
+$router->middleware('staff')->post('/registry/admit',     'RegistryController@admit');
+
+// Bursary
+$router->middleware('auth')->get('/bursary',              'BursaryController@index');
+$router->middleware('staff')->get('/bursary/payments',    'BursaryController@payments');
+$router->middleware('staff')->post('/bursary/record',     'BursaryController@record');
+
+// Library
+$router->middleware('auth')->get('/library',              'LibraryController@index');
+$router->middleware('staff')->get('/library/books',       'LibraryController@books');
+$router->middleware('staff')->post('/library/books',      'LibraryController@storeBook');
