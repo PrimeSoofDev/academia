@@ -97,6 +97,10 @@ class ProfileController extends Controller
                 if (isset($data['profile_image'])) {
                     $_SESSION['auth']['profile_image'] = $data['profile_image'];
                 }
+                
+                // Send notification
+                (new Notification())->send($userId, $tenantId, 'Pictures Updated', 'Your profile/banner images have been successfully changed.', 'success', '/profile');
+
                 $this->flash('success', 'Images updated successfully.');
             } else {
                 $this->flash('info', 'No valid images selected.');
@@ -167,6 +171,9 @@ class ProfileController extends Controller
 
             // Update the session data so the name in the header refreshes
             $_SESSION['auth']['name'] = $name;
+
+            // Send notification
+            (new Notification())->send($userId, $tenantId, 'Profile Updated', 'Your personal information has been successfully updated.', 'success', '/profile');
 
             $this->flash('success', 'Profile updated successfully.');
             $this->redirect('/profile');

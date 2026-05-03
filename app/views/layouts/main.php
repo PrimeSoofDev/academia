@@ -65,6 +65,14 @@
 <?php $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); ?>
 
 <?php
+// Notification fetching
+require_once ROOT_PATH . '/app/models/Notification.php';
+$notifModel = new Notification();
+$unreadCount = $notifModel->countUnread($authUser['user_id'] ?? $authUser['id'] ?? 0, $authUser['tenant_id'] ?? 0);
+$topNotifs = $unreadCount > 0 ? $notifModel->getUnread($authUser['user_id'] ?? $authUser['id'] ?? 0, $authUser['tenant_id'] ?? 0, 5) : [];
+?>
+
+<?php
 // Helper: is nav item active?
 function navActive(string $href, string $currentPath): string {
     if ($href === '/dashboard') {
@@ -364,13 +372,72 @@ function navActive(string $href, string $currentPath): string {
 
         <!-- Right: profile chip with hover dropdown -->
         <div class="flex items-center gap-3">
-            <button class="relative p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                </svg>
-                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
+            <!-- Notifications -->
+            <div class="relative group/notif">
+                <button class="relative p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    <?php if ($unreadCount > 0): ?>
+                        <span class="absolute top-1.5 right-1.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white">
+                            <?= $unreadCount > 9 ? '9+' : $unreadCount ?>
+                        </span>
+                    <?php endif; ?>
+                </button>
+
+                <!-- Notification Dropdown (opens on hover) -->
+                <div class="invisible opacity-0 group-hover/notif:visible group-hover/notif:opacity-100 transition-all duration-200
+                            absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
+                    
+                    <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                        <h3 class="text-sm font-bold text-slate-800">Notifications</h3>
+                        <a href="<?= url('/notifications') ?>" class="text-[11px] font-semibold text-brand-600 hover:text-brand-700">View All</a>
+                    </div>
+
+                    <div class="max-h-96 overflow-y-auto">
+                        <?php if (empty($topNotifs)): ?>
+                            <div class="px-4 py-8 text-center">
+                                <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-3">
+                                    <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                                </div>
+                                <p class="text-xs text-slate-400 font-medium">All caught up!</p>
+                            </div>
+                        <?php else: ?>
+                            <?php foreach ($topNotifs as $notif): ?>
+                                <div class="px-4 py-3 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0 relative">
+                                    <div class="flex gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center shrink-0 mt-0.5">
+                                            <?php 
+                                                $icon = '<svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                                                if ($notif['type'] === 'success') $icon = '<svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+                                                if ($notif['type'] === 'warning') $icon = '<svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>';
+                                                echo $icon;
+                                            ?>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-xs font-bold text-slate-800 leading-tight"><?= htmlspecialchars($notif['title']) ?></p>
+                                            <p class="text-[11px] text-slate-500 mt-0.5 line-clamp-2"><?= htmlspecialchars($notif['message']) ?></p>
+                                            <p class="text-[9px] text-slate-400 mt-1"><?= date('M j, g:i a', strtotime($notif['created_at'])) ?></p>
+                                        </div>
+                                    </div>
+                                    <?php if ($notif['link']): ?>
+                                        <a href="<?= url($notif['link']) ?>" class="absolute inset-0 z-10"></a>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if ($unreadCount > 0): ?>
+                    <div class="px-4 py-2 border-t border-slate-100 bg-slate-50/30 text-center">
+                        <form action="<?= url('/notifications/read-all') ?>" method="POST">
+                            <button type="submit" class="text-[10px] font-bold text-slate-400 hover:text-slate-600 uppercase tracking-wider">Mark all as read</button>
+                        </form>
+                    </div>
+                    <?php endif; ?>
+                </div>
+            </div>
 
             <!-- Profile dropdown trigger (hover → drops down) -->
             <div class="relative group/nav-profile" id="profileDropdownWrapper">

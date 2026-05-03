@@ -209,7 +209,22 @@ CREATE TABLE IF NOT EXISTS results (
     INDEX idx_tenant  (tenant_id)
 ) ENGINE=InnoDB;
 
--- ── 13. AUDIT LOGS ────────────────────────────────────────────
+-- ── 13. NOTIFICATIONS ──────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS notifications (
+    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    tenant_id   INT UNSIGNED NOT NULL,
+    user_id     INT UNSIGNED NOT NULL,
+    title       VARCHAR(255) NOT NULL,
+    message     TEXT NOT NULL,
+    type        VARCHAR(50) DEFAULT 'info',     -- info, success, warning, error
+    link        VARCHAR(255) NULL,              -- where to go when clicked
+    is_read     TINYINT(1) DEFAULT 0,
+    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user (user_id),
+    INDEX idx_tenant (tenant_id)
+) ENGINE=InnoDB;
+
+-- ── 14. AUDIT LOGS ────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS audit_logs (
     id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     tenant_id  INT UNSIGNED NOT NULL,
