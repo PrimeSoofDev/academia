@@ -102,7 +102,7 @@ function navActive(string $href, string $currentPath): string {
         <div class="w-full bg-slate-800/60 group-hover/profile:bg-slate-700/60 rounded-xl p-3 flex items-center gap-3 transition-colors cursor-pointer">
             <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden border border-slate-600">
                 <?php if (!empty($authUser['profile_image'])): ?>
-                    <img src="<?= $authUser['profile_image'] ?>" alt="Avatar" class="w-full h-full object-cover">
+                    <img src="<?= url($authUser['profile_image']) ?>" alt="Avatar" class="w-full h-full object-cover">
                 <?php else: ?>
                     <div class="w-full h-full bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center">
                         <?= strtoupper(substr($authUser['name'] ?? 'U', 0, 1)) ?>
@@ -129,7 +129,7 @@ function navActive(string $href, string $currentPath): string {
             <div class="px-4 py-3 bg-gradient-to-r from-brand-50 to-indigo-50 border-b border-slate-100 flex items-center gap-3">
                 <div class="w-10 h-10 rounded-full overflow-hidden bg-slate-200 border border-slate-100 shrink-0">
                     <?php if (!empty($authUser['profile_image'])): ?>
-                        <img src="<?= $authUser['profile_image'] ?>" class="w-full h-full object-cover">
+                        <img src="<?= url($authUser['profile_image']) ?>" class="w-full h-full object-cover">
                     <?php else: ?>
                         <div class="w-full h-full bg-brand-500 flex items-center justify-center text-white font-bold text-xs">
                             <?= strtoupper(substr($authUser['name'] ?? 'U', 0, 1)) ?>
@@ -377,7 +377,7 @@ function navActive(string $href, string $currentPath): string {
                 <div class="flex items-center gap-2 bg-slate-100 group-hover/nav-profile:bg-slate-200 rounded-xl px-3 py-1.5 cursor-pointer transition-colors focus:outline-none">
                     <div class="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center text-white font-bold text-xs overflow-hidden border border-slate-300">
                         <?php if (!empty($authUser['profile_image'])): ?>
-                            <img src="<?= $authUser['profile_image'] ?>" alt="Avatar" class="w-full h-full object-cover">
+                            <img src="<?= url($authUser['profile_image']) ?>" alt="Avatar" class="w-full h-full object-cover">
                         <?php else: ?>
                             <div class="w-full h-full bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center">
                                 <?= strtoupper(substr($authUser['name'] ?? 'U', 0, 1)) ?>
@@ -403,7 +403,7 @@ function navActive(string $href, string $currentPath): string {
                     <div class="px-4 py-3 bg-gradient-to-r from-brand-50 to-indigo-50 border-b border-slate-100 flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full overflow-hidden bg-slate-200 border border-slate-100 shrink-0">
                             <?php if (!empty($authUser['profile_image'])): ?>
-                                <img src="<?= $authUser['profile_image'] ?>" class="w-full h-full object-cover">
+                                <img src="<?= url($authUser['profile_image']) ?>" class="w-full h-full object-cover">
                             <?php else: ?>
                                 <div class="w-full h-full bg-brand-500 flex items-center justify-center text-white font-bold text-xs">
                                     <?= strtoupper(substr($authUser['name'] ?? 'U', 0, 1)) ?>

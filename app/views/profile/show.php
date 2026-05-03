@@ -26,13 +26,13 @@ $roleBadge = [
 
         <!-- Avatar Card -->
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            <div class="h-28 bg-cover bg-center relative" style="background-image: url('<?= $user['banner_image'] ?: 'https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=800&q=80' ?>')">
+            <div class="h-28 bg-cover bg-center relative" style="background-image: url('<?= $user['banner_image'] ? url($user['banner_image']) : 'https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=800&q=80' ?>')">
                 <div class="absolute inset-0 bg-black/10"></div>
             </div>
             <div class="px-6 pb-6 -mt-12 flex flex-col items-center text-center relative z-10">
                 <div class="w-24 h-24 rounded-full bg-slate-200 flex items-center justify-center text-white font-black text-3xl shadow-xl border-4 border-white mb-3 overflow-hidden">
                     <?php if ($user['profile_image']): ?>
-                        <img src="<?= $user['profile_image'] ?>" alt="Profile" class="w-full h-full object-cover">
+                        <img src="<?= url($user['profile_image']) ?>" alt="Profile" class="w-full h-full object-cover">
                     <?php else: ?>
                         <div class="w-full h-full bg-gradient-to-br from-brand-400 to-purple-500 flex items-center justify-center">
                             <?= strtoupper(substr($user['name'] ?? 'U', 0, 1)) ?>
@@ -132,7 +132,7 @@ $roleBadge = [
                         <label class="block text-sm font-medium text-slate-700 mb-2">Profile Picture</label>
                         <div class="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-brand-300 transition-colors bg-slate-50">
                             <div class="w-12 h-12 rounded-full overflow-hidden bg-slate-200 shrink-0 border border-slate-200">
-                                <img id="profilePreview" src="<?= $user['profile_image'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($user['name'] ?? 'User') ?>" class="w-full h-full object-cover">
+                                <img id="profilePreview" src="<?= $user['profile_image'] ? url($user['profile_image']) : 'https://ui-avatars.com/api/?name=' . urlencode($user['name'] ?? 'User') ?>" class="w-full h-full object-cover">
                             </div>
                             <div class="min-w-0 flex-1">
                                 <input type="file" name="profile_image" accept="image/*" class="text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer w-full"
@@ -146,7 +146,7 @@ $roleBadge = [
                         <label class="block text-sm font-medium text-slate-700 mb-2">Banner Image</label>
                         <div class="p-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-brand-300 transition-colors bg-slate-50">
                             <div class="h-12 w-full rounded-lg overflow-hidden bg-slate-200 mb-2 border border-slate-200">
-                                <img id="bannerPreview" src="<?= $user['banner_image'] ?: 'https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=800&q=80' ?>" class="w-full h-full object-cover">
+                                <img id="bannerPreview" src="<?= $user['banner_image'] ? url($user['banner_image']) : 'https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=800&q=80' ?>" class="w-full h-full object-cover">
                             </div>
                             <input type="file" name="banner_image" accept="image/*" class="text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer w-full"
                                    onchange="previewImage(this, 'bannerPreview')">
