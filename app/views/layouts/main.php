@@ -195,13 +195,17 @@ function navActive($path, $current) {
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
                 <div class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
-                    <?php if (isset($breadcrumb)): ?>
+                    <?php if (isset($breadcrumb) && is_array($breadcrumb)): ?>
                         <?php foreach ($breadcrumb as $i => $item): ?>
                             <?php if ($i > 0): ?><span>/</span><?php endif; ?>
-                            <a href="<?= $item['href'] ?>" class="hover:text-brand-600 transition-colors"><?= $item['label'] ?></a>
+                            <?php if (isset($item['href'])): ?>
+                                <a href="<?= url($item['href']) ?>" class="hover:text-brand-600 transition-colors"><?= htmlspecialchars($item['label']) ?></a>
+                            <?php else: ?>
+                                <span class="text-slate-900"><?= htmlspecialchars($item['label']) ?></span>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <span>Dashboard</span>
+                        <span class="text-slate-900">Dashboard</span>
                     <?php endif; ?>
                 </div>
             </div>
