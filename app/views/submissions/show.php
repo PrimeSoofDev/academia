@@ -50,7 +50,8 @@ $breadcrumb = [
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Electronic Content / Entry</h4>
                     <?php 
                     $data = json_decode($submission['content'], true);
-                    if ($data && isset($data['type']) && $data['type'] === 'table'): 
+                    if ($data && isset($data['type'])):
+                        if ($data['type'] === 'table'):
                     ?>
                         <div class="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm">
                             <table class="w-full text-xs text-left">
@@ -82,6 +83,31 @@ $breadcrumb = [
                                 </tbody>
                             </table>
                         </div>
+                    <?php elseif ($data['type'] === 'rich-text'): ?>
+                        <style>
+                            .a4-view-container {
+                                background: #f8fafc;
+                                padding: 30px;
+                                display: flex;
+                                justify-content: center;
+                                border-radius: 20px;
+                                border: 1px solid #e2e8f0;
+                            }
+                            .a4-paper-view {
+                                width: 100%;
+                                max-width: 210mm;
+                                min-height: 100px;
+                                background: white;
+                                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                                padding: 20mm;
+                            }
+                        </style>
+                        <div class="a4-view-container">
+                            <div class="a4-paper-view prose prose-slate max-w-none">
+                                <?= $data['data'] ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                     <?php else: ?>
                         <div class="p-6 rounded-2xl bg-slate-50 text-slate-700 text-sm border border-slate-100 font-mono whitespace-pre-wrap leading-relaxed shadow-inner">
                             <?= htmlspecialchars($submission['content']) ?>
