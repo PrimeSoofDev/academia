@@ -216,6 +216,14 @@ function navActive(string $href, string $currentPath): string {
             <span>Dashboard</span>
         </a>
 
+        <a href="<?= url('/calendar') ?>"
+           class="nav-link <?= navActive('/calendar', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <span>Calendar</span>
+        </a>
+
         <!-- ── ACADEMIC (lecturers and above) ── -->
         <?php if (in_array($currentRole, ['superadmin', 'vc', 'dean', 'hod', 'lecturer'])): ?>
         <div class="pt-4 pb-1"><p class="text-slate-500 text-[10px] font-semibold uppercase tracking-widest px-3">Academic</p></div>

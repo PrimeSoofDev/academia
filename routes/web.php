@@ -111,6 +111,11 @@ $router->middleware('auth')->get('/notifications',            'NotificationContr
 $router->middleware('auth')->post('/notifications/read',      'NotificationController@markRead');
 $router->middleware('auth')->post('/notifications/read-all',  'NotificationController@markAllRead');
 
+// ── Calendar & Meetings ──
+$router->middleware('auth')->get('/calendar',                 'MeetingController@index');
+$router->middleware('auth')->post('/calendar/book',           'MeetingController@book');
+$router->middleware('auth')->post('/calendar/cancel',         'MeetingController@cancel');
+
 // ── Results (role-aware: student sees transcript, staff/lecturer sees entry sheet) ──
 $router->middleware('auth')->get('/results',                                      'ResultController@index');
 $router->middleware('lecturer')->get('/results/courses/{id}',                     'ResultController@courseSheet');

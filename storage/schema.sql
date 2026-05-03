@@ -209,7 +209,25 @@ CREATE TABLE IF NOT EXISTS results (
     INDEX idx_tenant  (tenant_id)
 ) ENGINE=InnoDB;
 
--- ── 13. NOTIFICATIONS ──────────────────────────────────────────
+-- ── 13. MEETINGS & BOOKINGS ────────────────────────────────────
+CREATE TABLE IF NOT EXISTS meetings (
+    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    tenant_id   INT UNSIGNED NOT NULL,
+    host_id     INT UNSIGNED NOT NULL,
+    guest_id    INT UNSIGNED NULL,
+    title       VARCHAR(255) NOT NULL,
+    description TEXT NULL,
+    start_time  DATETIME NOT NULL,
+    end_time    DATETIME NOT NULL,
+    location    VARCHAR(255) NULL,
+    status      ENUM('pending','confirmed','cancelled') DEFAULT 'pending',
+    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_host (host_id),
+    INDEX idx_guest (guest_id),
+    INDEX idx_tenant (tenant_id)
+) ENGINE=InnoDB;
+
+-- ── 14. NOTIFICATIONS ──────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS notifications (
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     tenant_id   INT UNSIGNED NOT NULL,
