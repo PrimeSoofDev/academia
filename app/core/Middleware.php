@@ -23,6 +23,9 @@ class Middleware
         'lecturer'   => 'lecturerMiddleware',
         'staff'      => 'staffMiddleware',
         'student'    => 'studentMiddleware',
+        'registry'   => 'registryMiddleware',
+        'bursary'    => 'bursaryMiddleware',
+        'library'    => 'libraryMiddleware',
     ];
 
     /**
@@ -139,5 +142,44 @@ class Middleware
     {
         self::authMiddleware();
         Auth::authorize(['student']);
+    }
+
+    /**
+     * Restrict to Registry unit staff (or high-level management).
+     */
+    private static function registryMiddleware(): void
+    {
+        self::authMiddleware();
+        $user = Auth::user();
+        $allowedRoles = ['superadmin', 'vc'];
+        if (!in_array($user['role'], $allowedRoles) && (int)($user['unit_id'] ?? 0) !== 1) {
+            Auth::deny();
+        }
+    }
+
+    /**
+     * Restrict to Bursary unit staff.
+     */
+    private static function bursaryMiddleware(): void
+    {
+        self::authMiddleware();
+        $user = Auth::user();
+        $allowedRoles = ['superadmin', 'vc'];
+        if (!in_array($user['role'], $allowedRoles) && (int)($user['unit_id'] ?? 0) !== 2) {
+            Auth::deny();
+        }
+    }
+
+    /**
+     * Restrict to Library unit staff.
+     */
+    private static function libraryMiddleware(): void
+    {
+        self::authMiddleware();
+        $user = Auth::user();
+        $allowedRoles = ['superadmin', 'vc'];
+        if (!in_array($user['role'], $allowedRoles) && (int)($user['unit_id'] ?? 0) !== 3) {
+            Auth::deny();
+        }
     }
 }

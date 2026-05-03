@@ -306,25 +306,46 @@ function navActive(string $href, string $currentPath): string {
         <?php endif; ?>
 
         <!-- ── ADMIN UNITS (Registry / Bursary / Library) ── -->
-        <?php if (in_array($currentRole, ['superadmin', 'vc', 'staff'])): ?>
+        <?php 
+        $userUnitId = (int)($_SESSION['auth']['unit_id'] ?? 0);
+        $isAdmin = in_array($currentRole, ['superadmin', 'vc']);
+        
+        if ($isAdmin || $currentRole === 'staff'): 
+            $canSeeRegistry = $isAdmin || $userUnitId === 1;
+            $canSeeBursary  = $isAdmin || $userUnitId === 2;
+            $canSeeLibrary  = $isAdmin || $userUnitId === 3;
+            
+            if ($canSeeRegistry || $canSeeBursary || $canSeeLibrary):
+        ?>
         <div class="pt-4 pb-1"><p class="text-slate-500 text-[10px] font-semibold uppercase tracking-widest px-3">Admin Units</p></div>
 
+        <?php if ($canSeeRegistry): ?>
         <a href="<?= url('/registry') ?>"
            class="nav-link <?= navActive('/registry', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
             <span class="w-5 text-center text-base">📋</span>
             <span>Registry</span>
         </a>
+        <?php endif; ?>
+
+        <?php if ($canSeeBursary): ?>
         <a href="<?= url('/bursary') ?>"
            class="nav-link <?= navActive('/bursary', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
             <span class="w-5 text-center text-base">💰</span>
             <span>Bursary</span>
         </a>
+        <?php endif; ?>
+
+        <?php if ($canSeeLibrary): ?>
         <a href="<?= url('/library') ?>"
            class="nav-link <?= navActive('/library', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
             <span class="w-5 text-center text-base">📚</span>
             <span>Library</span>
         </a>
         <?php endif; ?>
+        <?php 
+            endif;
+        endif; 
+        ?>
 
         <!-- ── ACCOUNT ── -->
         <div class="pt-4 pb-1"><p class="text-slate-500 text-[10px] font-semibold uppercase tracking-widest px-3">Account</p></div>

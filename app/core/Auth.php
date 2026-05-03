@@ -162,15 +162,23 @@ class Auth
         self::requireLogin();
 
         if (!self::hasRole($roles)) {
-            http_response_code(403);
-            $url = BASE_URL . '/dashboard';
-            echo "<!DOCTYPE html><html><body style='font-family:sans-serif;padding:2rem'>
-                <h1 style='color:#e53e3e'>403 — Forbidden</h1>
-                <p>You do not have permission to access this page.</p>
-                <a href='{$url}'>← Back to Dashboard</a>
-            </body></html>";
-            exit;
+            self::deny();
         }
+    }
+
+    /**
+     * Abort request with 403 Forbidden.
+     */
+    public static function deny(): void
+    {
+        http_response_code(403);
+        $url = BASE_URL . '/dashboard';
+        echo "<!DOCTYPE html><html><body style='font-family:sans-serif;padding:2rem'>
+            <h1 style='color:#e53e3e'>403 — Forbidden</h1>
+            <p>You do not have permission to access this page.</p>
+            <a href='{$url}'>← Back to Dashboard</a>
+        </body></html>";
+        exit;
     }
 
     /**

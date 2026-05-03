@@ -138,20 +138,20 @@ $router->middleware('auth')->post('/courses/{id}/drop',                         
 // ─────────────────────────────────────────────
 
 // Registry
-$router->middleware('auth')->get('/registry',             'RegistryController@index');
-$router->middleware('staff')->get('/registry/students',   'RegistryController@students');
-$router->middleware('staff')->get('/registry/staff',      'RegistryController@staff');
-$router->middleware('staff')->get('/registry/sessions',   'RegistryController@sessions');
-$router->middleware('staff')->post('/registry/sessions',  'RegistryController@storeSession');
-$router->middleware('staff')->post('/registry/sessions/set-current', 'RegistryController@setCurrentSession');
-$router->middleware('staff')->post('/registry/admit',     'RegistryController@admit');
+$router->middleware('registry')->get('/registry',             'RegistryController@index');
+$router->middleware('registry')->get('/registry/students',   'RegistryController@students');
+$router->middleware('registry')->get('/registry/staff',      'RegistryController@staff');
+$router->middleware('registry')->get('/registry/sessions',   'RegistryController@sessions');
+$router->middleware('registry')->post('/registry/sessions',  'RegistryController@storeSession');
+$router->middleware('registry')->post('/registry/sessions/set-current', 'RegistryController@setCurrentSession');
+$router->middleware('registry')->post('/registry/admit',     'RegistryController@admit');
 
 // Bursary
-$router->middleware('auth')->get('/bursary',              'BursaryController@index');
-$router->middleware('staff')->get('/bursary/payments',    'BursaryController@payments');
-$router->middleware('staff')->post('/bursary/record',     'BursaryController@record');
+$router->middleware('bursary')->get('/bursary',              'BursaryController@index');
+$router->middleware('bursary')->get('/bursary/payments',    'BursaryController@payments');
+$router->middleware('bursary')->post('/bursary/record',     'BursaryController@record');
 
 // Library
-$router->middleware('auth')->get('/library',              'LibraryController@index');
-$router->middleware('staff')->get('/library/books',       'LibraryController@books');
-$router->middleware('staff')->post('/library/books',      'LibraryController@storeBook');
+$router->middleware('library')->get('/library',              'LibraryController@index');
+$router->middleware('library')->get('/library/books',       'LibraryController@books');
+$router->middleware('library')->post('/library/books',      'LibraryController@storeBook');
