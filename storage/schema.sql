@@ -227,7 +227,25 @@ CREATE TABLE IF NOT EXISTS meetings (
     INDEX idx_tenant (tenant_id)
 ) ENGINE=InnoDB;
 
--- ── 14. NOTIFICATIONS ──────────────────────────────────────────
+-- ── 14. CAMPUS REPORTS ────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS campus_reports (
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    tenant_id       INT UNSIGNED NOT NULL,
+    student_id      INT UNSIGNED NOT NULL,
+    title           VARCHAR(255) NOT NULL,
+    description     TEXT NOT NULL,
+    category        VARCHAR(100) NOT NULL,          -- security, facility, academic, medical, etc.
+    urgency         ENUM('low', 'medium', 'high', 'critical') DEFAULT 'medium',
+    location        VARCHAR(255) NULL,
+    status          ENUM('pending', 'investigating', 'resolved', 'dismissed') DEFAULT 'pending',
+    resolution_note TEXT NULL,
+    created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_student (student_id),
+    INDEX idx_tenant  (tenant_id),
+    INDEX idx_status  (status)
+) ENGINE=InnoDB;
+
+-- ── 15. NOTIFICATIONS ──────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS notifications (
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     tenant_id   INT UNSIGNED NOT NULL,

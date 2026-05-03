@@ -111,6 +111,11 @@ $router->middleware('auth')->get('/notifications',            'NotificationContr
 $router->middleware('auth')->post('/notifications/read',      'NotificationController@markRead');
 $router->middleware('auth')->post('/notifications/read-all',  'NotificationController@markAllRead');
 
+// ── Campus Live Reporting ──
+$router->middleware('auth')->get('/reports',                  'ReportController@index');
+$router->middleware('student')->post('/reports/create',       'ReportController@store');
+$router->middleware('auth')->post('/reports/update-status',   'ReportController@updateStatus');
+
 // ── Calendar & Meetings ──
 $router->middleware('auth')->get('/calendar',                 'MeetingController@index');
 $router->middleware('auth')->post('/calendar/book',           'MeetingController@book');
