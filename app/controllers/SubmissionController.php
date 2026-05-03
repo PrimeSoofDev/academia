@@ -95,15 +95,26 @@ class SubmissionController extends Controller
         }
 
         if ($courseId && $type) {
+            // Determine lecturer signature
+            $user = (new User())->find($userId, $tenantId);
+            $sigPath = $user['signature_path'] ?? null;
+            
+            $drawnSig = $this->post('drawn_signature');
+            if ($drawnSig) {
+                $savedPath = $this->saveSignature($drawnSig);
+                if ($savedPath) $sigPath = $savedPath;
+            }
+
             $submissionId = $this->submissionModel->create([
-                'tenant_id'   => $tenantId,
-                'course_id'   => $courseId,
-                'lecturer_id' => $userId,
-                'type'        => $type,
-                'content'     => $content,
-                'file_path'   => $filePath,
-                'status'      => 'submitted',
-                'lecturer_signed_at' => date('Y-m-d H:i:s')
+                'tenant_id'          => $tenantId,
+                'course_id'          => $courseId,
+                'lecturer_id'        => $userId,
+                'type'               => $type,
+                'content'            => $content,
+                'file_path'          => $filePath,
+                'status'             => 'submitted',
+                'lecturer_signed_at' => date('Y-m-d H:i:s'),
+                'lecturer_sig_path'  => $sigPath
             ]);
 
             // Notify HOD
@@ -138,9 +149,9 @@ class SubmissionController extends Controller
         
         $submission = $this->submissionModel->raw("
             SELECT s.*, c.code as course_code, c.title as course_title, 
-                   u.name as lecturer_name, u.signature_path as lecturer_sig,
-                   h.name as hod_name, h.signature_path as hod_sig,
-                   d.name as dean_name, d.signature_path as dean_sig
+                   u.name as lecturer_name, 
+                   h.name as hod_name,
+                   d.name as dean_name
             FROM academic_submissions s
             JOIN courses c ON s.course_id = c.id
             JOIN users u ON s.lecturer_id = u.id
@@ -173,6 +184,16 @@ class SubmissionController extends Controller
         $status = $this->post('action') === 'reject' ? 'rejected' : 'approved';
         $remarks = $this->post('remarks');
 
+        // Determine reviewer signature
+        $user = (new User())->find($userId, $tenantId);
+        $sigPath = $user['signature_path'] ?? null;
+        
+        $drawnSig = $this->post('drawn_signature');
+        if ($drawnSig) {
+            $savedPath = $this->saveSignature($drawnSig);
+            if ($savedPath) $sigPath = $savedPath;
+        }
+
         $data = [
             'status' => $status,
             'remarks' => $remarks
@@ -181,10 +202,12 @@ class SubmissionController extends Controller
         if ($role === 'hod') {
             $data['hod_id'] = $userId;
             $data['hod_signed_at'] = date('Y-m-d H:i:s');
+            $data['hod_sig_path'] = $sigPath;
             $data['status'] = ($status === 'approved') ? 'reviewed' : 'rejected';
         } elseif ($role === 'dean' || $role === 'vc' || $role === 'superadmin') {
             $data['dean_id'] = $userId;
             $data['dean_signed_at'] = date('Y-m-d H:i:s');
+            $data['dean_sig_path'] = $sigPath;
         }
 
         $this->submissionModel->update($id, $data, $tenantId);
@@ -202,5 +225,27 @@ class SubmissionController extends Controller
 
         $this->flash('success', "Submission " . ($status === 'approved' ? 'approved and signed' : 'rejected') . ".");
         $this->redirect("/submissions/{$id}");
+    }
+
+    /**
+     * Helper to save base64 signature as file
+     */
+    private function saveSignature(string $base64): ?string
+    {
+        if (empty($base64) || !str_contains($base64, 'base64,')) return null;
+
+        $data = explode(',', $base64);
+        $content = base64_decode($data[1]);
+        
+        $filename = 'sig_' . time() . '_' . uniqid() . '.png';
+        $path = ROOT_PATH . '/public/uploads/signatures/' . $filename;
+        
+        if (!is_dir(dirname($path))) mkdir(dirname($path), 0777, true);
+        
+        if (file_put_contents($path, $content)) {
+            return '/uploads/signatures/' . $filename;
+        }
+        
+        return null;
     }
 }
