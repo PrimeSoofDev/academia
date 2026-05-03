@@ -42,6 +42,10 @@ $router->middleware('auth')->get('/logout', 'AuthController@logout');
 
 $router->middleware('auth')->get('/dashboard', 'DashboardController@index');
 
+// Student Academic Records
+$router->middleware('auth')->get('/records/transcript',  'RecordController@transcript');
+$router->middleware('auth')->get('/records/certificate', 'RecordController@certificate');
+
 
 // ─────────────────────────────────────────────
 // 3. FACULTY ROUTES (VC / Dean and above)

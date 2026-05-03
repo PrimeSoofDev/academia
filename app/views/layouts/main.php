@@ -270,6 +270,26 @@ function navActive(string $href, string $currentPath): string {
             <span>Courses</span>
         </a>
 
+        <?php if (Auth::role() === 'student'): ?>
+        <div class="mt-6 mb-2 px-4">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">My Records</span>
+        </div>
+        <a href="<?= url('/records/transcript') ?>"
+           class="nav-link <?= navActive('/records/transcript', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <span>My Transcript</span>
+        </a>
+        <a href="<?= url('/records/certificate') ?>"
+           class="nav-link <?= navActive('/records/certificate', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
+            </svg>
+            <span>Degree Certificate</span>
+        </a>
+        <?php endif; ?>
+
         <a href="<?= url('/results') ?>"
            class="nav-link <?= navActive('/results', $currentPath) ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 text-sm font-medium transition-all">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
