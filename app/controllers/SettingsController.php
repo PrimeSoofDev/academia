@@ -15,7 +15,7 @@ class SettingsController extends Controller
     public function __construct()
     {
         parent::__construct();
-        Auth::requireAuth();
+        Auth::requireLogin();
         $this->userModel = new User();
     }
 
@@ -25,7 +25,7 @@ class SettingsController extends Controller
      */
     public function index(): void
     {
-        $userId = $_SESSION['auth']['id'];
+        $userId = Auth::id();
         $user = $this->userModel->findById($userId);
 
         $this->view('settings.index', [
@@ -48,7 +48,7 @@ class SettingsController extends Controller
             $this->redirect('/settings');
         }
 
-        $userId = $_SESSION['auth']['id'];
+        $userId = Auth::id();
         $currentPassword = $_POST['current_password'] ?? '';
         $newPassword     = $_POST['new_password'] ?? '';
         $confirmPassword = $_POST['confirm_password'] ?? '';
@@ -72,7 +72,7 @@ class SettingsController extends Controller
         }
 
         // Hash and Update
-        $tenantId = $_SESSION['auth']['tenant_id'];
+        $tenantId = Auth::tenantId();
         $this->userModel->changePassword($userId, $newPassword, $tenantId);
 
         $this->flash('success', 'Password updated successfully.');
