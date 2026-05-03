@@ -26,7 +26,7 @@ class SettingsController extends Controller
     public function index(): void
     {
         $userId = Auth::id();
-        $user = $this->userModel->findById($userId);
+        $user = $this->userModel->find($userId, Auth::tenantId());
 
         $this->view('settings.index', [
             'pageTitle' => 'Account Settings',
@@ -53,7 +53,7 @@ class SettingsController extends Controller
         $newPassword     = $_POST['new_password'] ?? '';
         $confirmPassword = $_POST['confirm_password'] ?? '';
 
-        $user = $this->userModel->findById($userId);
+        $user = $this->userModel->find($userId, Auth::tenantId());
 
         // Validation
         if (!Auth::verifyPassword($currentPassword, $user['password'])) {
