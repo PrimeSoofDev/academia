@@ -35,8 +35,14 @@ class CourseController extends Controller
         $tenantId = Auth::tenantId();
         $courses = $this->courseModel->allWithDetails($tenantId);
 
+        $lecturers = [];
+        if (in_array(Auth::role(), ['superadmin', 'vc', 'dean', 'hod'])) {
+            $lecturers = $this->userModel->getByRole('lecturer', $tenantId);
+        }
+
         $this->view('courses.index', [
-            'courses' => $courses
+            'courses'   => $courses,
+            'lecturers' => $lecturers
         ]);
     }
 
@@ -96,6 +102,52 @@ class CourseController extends Controller
             $this->flash('error', 'Please fill all required fields correctly.');
             $this->redirect('/courses/create');
         }
+    }
+
+    /**
+     * POST /courses/assign
+     * HOD assigns a course to a lecturer
+     */
+    public function assign(): void
+    {
+        Auth::authorize(['superadmin', 'vc', 'dean', 'hod']);
+        if (!$this->isPost()) $this->redirect('/courses');
+
+        $courseId   = (int)$this->post('course_id');
+        $lecturerId = $this->post('lecturer_id');
+        $tenantId   = Auth::tenantId();
+
+        if (!$courseId) {
+            $this->flash('error', 'Invalid course.');
+            $this->redirect('/courses');
+        }
+
+        $course = $this->courseModel->findWhere(['id' => $courseId, 'tenant_id' => $tenantId]);
+        if (!$course) {
+            $this->flash('error', 'Course not found.');
+            $this->redirect('/courses');
+        }
+
+        // Update the course
+        $this->courseModel->query("
+            UPDATE courses SET lecturer_id = :lid WHERE id = :cid AND tenant_id = :tid
+        ", [':lid' => $lecturerId ?: null, ':cid' => $courseId, ':tid' => $tenantId]);
+
+        if ($lecturerId) {
+            // Notify the lecturer
+            require_once ROOT_PATH . '/app/models/Notification.php';
+            (new Notification())->send(
+                (int)$lecturerId,
+                $tenantId,
+                'New Course Assignment',
+                "You have been assigned to teach: {$course['code']} - {$course['title']}",
+                'info',
+                "/results"
+            );
+        }
+
+        $this->flash('success', 'Lecturer assigned successfully.');
+        $this->redirect($this->post('redirect', '/courses'));
     }
 
     /**

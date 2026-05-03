@@ -77,6 +77,7 @@ $router->middleware('lecturer')->get('/courses',              'CourseController@
 $router->middleware('hod')->get('/courses/create',            'CourseController@create');
 $router->middleware('hod')->post('/courses/create',           'CourseController@store');
 $router->middleware('lecturer')->get('/courses/{id}',         'CourseController@show');
+$router->middleware('hod')->post('/courses/assign',           'CourseController@assign');
 $router->middleware('hod')->get('/courses/{id}/edit',         'CourseController@edit');
 $router->middleware('hod')->post('/courses/{id}/edit',        'CourseController@update');
 $router->middleware('admin')->post('/courses/{id}/delete',    'CourseController@destroy');
