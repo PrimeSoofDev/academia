@@ -26,10 +26,18 @@ $roleBadge = [
 
         <!-- Avatar Card -->
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            <div class="h-20 bg-gradient-to-r from-brand-600 to-indigo-500 relative"></div>
-            <div class="px-6 pb-6 -mt-10 flex flex-col items-center text-center">
-                <div class="w-20 h-20 rounded-full bg-gradient-to-br from-brand-400 to-purple-500 flex items-center justify-center text-white font-black text-3xl shadow-lg border-4 border-white mb-3">
-                    <?= strtoupper(substr($user['name'] ?? 'U', 0, 1)) ?>
+            <div class="h-28 bg-cover bg-center relative" style="background-image: url('<?= $user['banner_image'] ?: 'https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=800&q=80' ?>')">
+                <div class="absolute inset-0 bg-black/10"></div>
+            </div>
+            <div class="px-6 pb-6 -mt-12 flex flex-col items-center text-center relative z-10">
+                <div class="w-24 h-24 rounded-full bg-slate-200 flex items-center justify-center text-white font-black text-3xl shadow-xl border-4 border-white mb-3 overflow-hidden">
+                    <?php if ($user['profile_image']): ?>
+                        <img src="<?= $user['profile_image'] ?>" alt="Profile" class="w-full h-full object-cover">
+                    <?php else: ?>
+                        <div class="w-full h-full bg-gradient-to-br from-brand-400 to-purple-500 flex items-center justify-center">
+                            <?= strtoupper(substr($user['name'] ?? 'U', 0, 1)) ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 <h2 class="font-extrabold text-slate-800 text-xl leading-tight"><?= htmlspecialchars($user['name'] ?? '') ?></h2>
                 <p class="text-slate-500 text-sm mt-0.5"><?= htmlspecialchars($user['email'] ?? '') ?></p>
@@ -108,6 +116,52 @@ $roleBadge = [
 
     <!-- ── RIGHT: Edit Forms ── -->
     <div class="lg:col-span-2 space-y-6">
+
+        <!-- Profile & Banner Images Form -->
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden" id="images">
+            <div class="px-6 py-4 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800 text-base">Profile & Banner Pictures</h3>
+                <p class="text-sm text-slate-500 mt-0.5">Upload high-quality images to personalize your profile.</p>
+            </div>
+
+            <form action="<?= url('/profile') ?>" method="POST" enctype="multipart/form-data" class="p-6 space-y-5">
+                <input type="hidden" name="action" value="images">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Profile Picture</label>
+                        <div class="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-brand-300 transition-colors bg-slate-50">
+                            <div class="w-12 h-12 rounded-full overflow-hidden bg-slate-200 shrink-0 border border-slate-200">
+                                <img id="profilePreview" src="<?= $user['profile_image'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($user['name'] ?? 'User') ?>" class="w-full h-full object-cover">
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <input type="file" name="profile_image" accept="image/*" class="text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer w-full"
+                                       onchange="previewImage(this, 'profilePreview')">
+                                <p class="text-[10px] text-slate-400 mt-1">Recommended: Square, min 400x400px</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Banner Image</label>
+                        <div class="p-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-brand-300 transition-colors bg-slate-50">
+                            <div class="h-12 w-full rounded-lg overflow-hidden bg-slate-200 mb-2 border border-slate-200">
+                                <img id="bannerPreview" src="<?= $user['banner_image'] ?: 'https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=800&q=80' ?>" class="w-full h-full object-cover">
+                            </div>
+                            <input type="file" name="banner_image" accept="image/*" class="text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer w-full"
+                                   onchange="previewImage(this, 'bannerPreview')">
+                            <p class="text-[10px] text-slate-400 mt-1">Recommended: 1200x300px</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex items-center justify-end border-t border-slate-100">
+                    <button type="submit" class="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm">
+                        Upload Pictures
+                    </button>
+                </div>
+            </form>
+        </div>
 
         <!-- Profile Info Form -->
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden" id="profile">
@@ -294,6 +348,16 @@ function checkMatch() {
     } else {
         lbl.textContent = '✗ Passwords do not match';
         lbl.className = 'text-[10px] mt-1 text-red-500';
+    }
+}
+
+function previewImage(input, previewId) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById(previewId).src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
     }
 }
 </script>

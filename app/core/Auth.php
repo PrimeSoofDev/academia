@@ -27,8 +27,9 @@ class Auth
             'tenant_id' => $user['tenant_id'],
             'role'      => $user['role'],
             'unit_id'   => $user['unit_id'] ?? null,
-            'name'      => $user['name'],
-            'email'     => $user['email'],
+            'name'          => $user['name'],
+            'email'         => $user['email'],
+            'profile_image' => $user['profile_image'] ?? null,
         ];
     }
 

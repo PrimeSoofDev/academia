@@ -60,7 +60,49 @@ class ProfileController extends Controller
         $userId   = Auth::id();
         $action   = $this->post('action', 'profile');
 
-        if ($action === 'password') {
+        if ($action === 'images') {
+            // ── Update Profile & Banner Images ──
+            $data = [];
+            $uploadDir = ROOT_PATH . '/public/uploads/';
+
+            // Profile Image
+            if (!empty($_FILES['profile_image']['name'])) {
+                $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+                $ext = strtolower(pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION));
+                
+                if (in_array($ext, $allowed)) {
+                    $filename = 'profile_' . $userId . '_' . time() . '.' . $ext;
+                    if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $uploadDir . 'profiles/' . $filename)) {
+                        $data['profile_image'] = '/uploads/profiles/' . $filename;
+                    }
+                }
+            }
+
+            // Banner Image
+            if (!empty($_FILES['banner_image']['name'])) {
+                $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+                $ext = strtolower(pathinfo($_FILES['banner_image']['name'], PATHINFO_EXTENSION));
+
+                if (in_array($ext, $allowed)) {
+                    $filename = 'banner_' . $userId . '_' . time() . '.' . $ext;
+                    if (move_uploaded_file($_FILES['banner_image']['tmp_name'], $uploadDir . 'banners/' . $filename)) {
+                        $data['banner_image'] = '/uploads/banners/' . $filename;
+                    }
+                }
+            }
+
+            if (!empty($data)) {
+                $this->userModel->update($userId, $data, $tenantId);
+                // Update session if profile image changed
+                if (isset($data['profile_image'])) {
+                    $_SESSION['auth']['profile_image'] = $data['profile_image'];
+                }
+                $this->flash('success', 'Images updated successfully.');
+            } else {
+                $this->flash('info', 'No valid images selected.');
+            }
+            $this->redirect('/profile');
+        } elseif ($action === 'password') {
             // ── Change Password ──
             $current = $this->post('current_password');
             $new     = $this->post('new_password');

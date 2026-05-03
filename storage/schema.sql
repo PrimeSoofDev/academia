@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS users (
     matric_number   VARCHAR(50) NULL,            -- students only
     staff_id        VARCHAR(50) NULL,            -- staff/lecturers
     profile_image   VARCHAR(255) NULL,
+    banner_image    VARCHAR(255) NULL,
     gender          ENUM('male','female','other') NULL,
     date_of_birth   DATE NULL,
     address         TEXT NULL,

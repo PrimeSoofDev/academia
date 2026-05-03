@@ -100,8 +100,14 @@ function navActive(string $href, string $currentPath): string {
     <div class="px-4 py-4 border-b border-slate-800 relative group/profile" id="sidebarProfileWrapper">
 
         <div class="w-full bg-slate-800/60 group-hover/profile:bg-slate-700/60 rounded-xl p-3 flex items-center gap-3 transition-colors cursor-pointer">
-            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                <?= strtoupper(substr($authUser['name'] ?? 'U', 0, 1)) ?>
+            <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden border border-slate-600">
+                <?php if (!empty($authUser['profile_image'])): ?>
+                    <img src="<?= $authUser['profile_image'] ?>" alt="Avatar" class="w-full h-full object-cover">
+                <?php else: ?>
+                    <div class="w-full h-full bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center">
+                        <?= strtoupper(substr($authUser['name'] ?? 'U', 0, 1)) ?>
+                    </div>
+                <?php endif; ?>
             </div>
             <div class="min-w-0 flex-1 text-left">
                 <p class="text-white text-sm font-semibold truncate"><?= htmlspecialchars($authUser['name'] ?? '') ?></p>
@@ -120,12 +126,20 @@ function navActive(string $href, string $currentPath): string {
                     absolute left-0 right-0 top-full mt-1 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50">
 
             <!-- Header -->
-            <div class="px-4 py-3 bg-gradient-to-r from-brand-50 to-indigo-50 border-b border-slate-100">
-                <p class="text-sm font-bold text-slate-800 truncate"><?= htmlspecialchars($authUser['name'] ?? '') ?></p>
-                <p class="text-xs text-slate-500 truncate mt-0.5"><?= htmlspecialchars($authUser['email'] ?? '') ?></p>
-                <span class="inline-block mt-1.5 px-2 py-0.5 bg-brand-100 text-brand-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
-                    <?= htmlspecialchars($currentRole) ?>
-                </span>
+            <div class="px-4 py-3 bg-gradient-to-r from-brand-50 to-indigo-50 border-b border-slate-100 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full overflow-hidden bg-slate-200 border border-slate-100 shrink-0">
+                    <?php if (!empty($authUser['profile_image'])): ?>
+                        <img src="<?= $authUser['profile_image'] ?>" class="w-full h-full object-cover">
+                    <?php else: ?>
+                        <div class="w-full h-full bg-brand-500 flex items-center justify-center text-white font-bold text-xs">
+                            <?= strtoupper(substr($authUser['name'] ?? 'U', 0, 1)) ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-sm font-bold text-slate-800 truncate"><?= htmlspecialchars($authUser['name'] ?? '') ?></p>
+                    <p class="text-xs text-slate-500 truncate mt-0.5"><?= htmlspecialchars($authUser['email'] ?? '') ?></p>
+                </div>
             </div>
 
             <!-- Menu Items -->
@@ -361,8 +375,14 @@ function navActive(string $href, string $currentPath): string {
             <!-- Profile dropdown trigger (hover → drops down) -->
             <div class="relative group/nav-profile" id="profileDropdownWrapper">
                 <div class="flex items-center gap-2 bg-slate-100 group-hover/nav-profile:bg-slate-200 rounded-xl px-3 py-1.5 cursor-pointer transition-colors focus:outline-none">
-                    <div class="w-7 h-7 rounded-full bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs">
-                        <?= strtoupper(substr($authUser['name'] ?? 'U', 0, 1)) ?>
+                    <div class="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center text-white font-bold text-xs overflow-hidden border border-slate-300">
+                        <?php if (!empty($authUser['profile_image'])): ?>
+                            <img src="<?= $authUser['profile_image'] ?>" alt="Avatar" class="w-full h-full object-cover">
+                        <?php else: ?>
+                            <div class="w-full h-full bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center">
+                                <?= strtoupper(substr($authUser['name'] ?? 'U', 0, 1)) ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="hidden sm:block text-left">
                         <p class="text-slate-700 text-xs font-semibold leading-none"><?= htmlspecialchars(explode(' ', $authUser['name'] ?? 'User')[0]) ?></p>
@@ -380,12 +400,20 @@ function navActive(string $href, string $currentPath): string {
                             absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
 
                     <!-- Header -->
-                    <div class="px-4 py-3 bg-gradient-to-r from-brand-50 to-indigo-50 border-b border-slate-100">
-                        <p class="text-sm font-bold text-slate-800 truncate"><?= htmlspecialchars($authUser['name'] ?? '') ?></p>
-                        <p class="text-xs text-slate-500 truncate mt-0.5"><?= htmlspecialchars($authUser['email'] ?? '') ?></p>
-                        <span class="inline-block mt-1.5 px-2 py-0.5 bg-brand-100 text-brand-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
-                            <?= htmlspecialchars($currentRole) ?>
-                        </span>
+                    <div class="px-4 py-3 bg-gradient-to-r from-brand-50 to-indigo-50 border-b border-slate-100 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full overflow-hidden bg-slate-200 border border-slate-100 shrink-0">
+                            <?php if (!empty($authUser['profile_image'])): ?>
+                                <img src="<?= $authUser['profile_image'] ?>" class="w-full h-full object-cover">
+                            <?php else: ?>
+                                <div class="w-full h-full bg-brand-500 flex items-center justify-center text-white font-bold text-xs">
+                                    <?= strtoupper(substr($authUser['name'] ?? 'U', 0, 1)) ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-slate-800 truncate"><?= htmlspecialchars($authUser['name'] ?? '') ?></p>
+                            <p class="text-xs text-slate-500 truncate mt-0.5"><?= htmlspecialchars($authUser['email'] ?? '') ?></p>
+                        </div>
                     </div>
 
                     <!-- Menu Items -->
