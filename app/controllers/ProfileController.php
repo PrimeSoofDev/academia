@@ -108,6 +108,20 @@ class ProfileController extends Controller
                 }
             }
 
+            // Digital Stamp Upload
+            if (!empty($_FILES['stamp']['name'])) {
+                $allowed = ['jpg', 'jpeg', 'png', 'webp'];
+                $ext = strtolower(pathinfo($_FILES['stamp']['name'], PATHINFO_EXTENSION));
+                if (in_array($ext, $allowed)) {
+                    $filename = 'stamp_' . $userId . '_' . time() . '.' . $ext;
+                    $stampDir = $uploadDir . 'signatures/'; // Keep in signatures for now
+                    if (!is_dir($stampDir)) mkdir($stampDir, 0777, true);
+                    if (move_uploaded_file($_FILES['stamp']['tmp_name'], $stampDir . $filename)) {
+                        $data['stamp_path'] = '/uploads/signatures/' . $filename;
+                    }
+                }
+            }
+
             if (!empty($data)) {
                 $this->userModel->update($userId, $data, $tenantId);
                 if (isset($data['profile_image'])) {

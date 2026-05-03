@@ -203,6 +203,7 @@ class SubmissionController extends Controller
             $data['hod_id'] = $userId;
             $data['hod_signed_at'] = date('Y-m-d H:i:s');
             $data['hod_sig_path'] = $sigPath;
+            $data['hod_stamp_path'] = $user['stamp_path'] ?? null;
             $data['status'] = ($status === 'approved') ? 'reviewed' : 'rejected';
         } elseif ($role === 'dean' || $role === 'vc' || $role === 'superadmin') {
             $data['dean_id'] = $userId;

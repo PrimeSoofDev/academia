@@ -174,6 +174,27 @@ $roleBadge = [
                     </div>
                 </div>
 
+                <?php if (in_array(Auth::role(), ['hod', 'dean', 'superadmin', 'vc'])): ?>
+                <div class="pt-2">
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Official Digital Stamp (HOD/Dean Only)</label>
+                    <div class="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-emerald-300 transition-colors bg-slate-50">
+                        <div class="w-32 h-24 rounded-lg overflow-hidden bg-white shrink-0 border border-slate-200 flex items-center justify-center">
+                            <?php if (!empty($user['stamp_path'])): ?>
+                                <img id="stampPreview" src="<?= url($user['stamp_path']) ?>" class="max-w-full max-h-full object-contain">
+                            <?php else: ?>
+                                <div id="stampPreviewPlaceholder" class="text-[10px] text-slate-400 font-bold uppercase tracking-widest px-2 text-center">No Stamp Uploaded</div>
+                                <img id="stampPreview" class="hidden max-w-full max-h-full object-contain">
+                            <?php endif; ?>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <input type="file" name="stamp" accept="image/*" class="text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer w-full"
+                                   onchange="previewImage(this, 'stampPreview', 'stampPreviewPlaceholder')">
+                            <p class="text-[10px] text-slate-400 mt-1">Upload your official office stamp (PNG with transparency preferred).</p>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <div class="pt-2 flex justify-end">
                     <button type="submit" class="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-brand-500/20">
                         Update Pictures & Signature

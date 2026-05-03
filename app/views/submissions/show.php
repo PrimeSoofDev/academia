@@ -80,13 +80,71 @@ $breadcrumb = [
                         </div>
                     <?php elseif ($data['type'] === 'rich-text'): ?>
                         <div class="a4-view-container p-8 bg-slate-50 rounded-3xl border border-slate-200 flex justify-center overflow-x-auto">
-                            <div class="bg-white p-12 shadow-lg min-h-[300px] w-full max-w-[210mm] prose prose-slate">
-                                <?= $data['data'] ?>
+                            <div class="bg-white p-12 shadow-lg min-h-[300px] w-full max-w-[210mm] prose prose-slate flex flex-col">
+                                <div class="flex-1">
+                                    <?= $data['data'] ?>
+                                </div>
+                                
+                                <!-- Signature Footer -->
+                                <div class="mt-20 pt-10 border-t border-slate-100 grid grid-cols-2 gap-12">
+                                    <div class="text-center">
+                                        <div class="h-24 flex items-center justify-center mb-2">
+                                            <?php if ($submission['lecturer_sig_path']): ?>
+                                                <img src="<?= url($submission['lecturer_sig_path']) ?>" class="max-h-full object-contain mix-blend-multiply">
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="border-t border-slate-900 pt-2">
+                                            <p class="text-xs font-bold uppercase tracking-widest text-slate-900">Lecturer's Signature</p>
+                                            <p class="text-[10px] text-slate-500 mt-1"><?= htmlspecialchars($submission['lecturer_name']) ?></p>
+                                        </div>
+                                    </div>
+                                    <div class="text-center relative">
+                                        <!-- HOD Digital Stamp -->
+                                        <?php if ($submission['hod_stamp_path']): ?>
+                                            <div class="absolute -top-12 -right-8 w-32 h-32 opacity-80 pointer-events-none rotate-12">
+                                                <img src="<?= url($submission['hod_stamp_path']) ?>" class="w-full h-full object-contain">
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <div class="h-24 flex items-center justify-center mb-2">
+                                            <?php if ($submission['hod_sig_path']): ?>
+                                                <img src="<?= url($submission['hod_sig_path']) ?>" class="max-h-full object-contain mix-blend-multiply">
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="border-t border-slate-900 pt-2">
+                                            <p class="text-xs font-bold uppercase tracking-widest text-slate-900">HOD's Signature & Stamp</p>
+                                            <p class="text-[10px] text-slate-500 mt-1"><?= $submission['hod_name'] ?? 'Pending Approval' ?></p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     <?php endif; ?>
                     <?php else: ?>
-                        <div class="p-6 rounded-2xl bg-slate-50 text-slate-700 text-sm border font-mono whitespace-pre-wrap"><?= htmlspecialchars($submission['content']) ?></div>
+                        <div class="p-8 rounded-2xl bg-white text-slate-700 text-sm border font-mono whitespace-pre-wrap shadow-inner flex flex-col min-h-[400px]">
+                            <div class="flex-1">
+                                <?= htmlspecialchars($submission['content']) ?>
+                            </div>
+                            
+                            <!-- Simple Signature Line for plain text -->
+                            <div class="mt-12 pt-8 border-t border-slate-100 grid grid-cols-2 gap-8">
+                                <div class="text-center">
+                                    <?php if ($submission['lecturer_sig_path']): ?>
+                                        <img src="<?= url($submission['lecturer_sig_path']) ?>" class="h-12 mx-auto mix-blend-multiply">
+                                    <?php endif; ?>
+                                    <div class="border-t border-slate-400 mt-1 pt-1 text-[10px] uppercase font-bold">Lecturer</div>
+                                </div>
+                                <div class="text-center relative">
+                                    <?php if ($submission['hod_stamp_path']): ?>
+                                        <img src="<?= url($submission['hod_stamp_path']) ?>" class="absolute -top-8 -right-4 h-20 opacity-70 rotate-12">
+                                    <?php endif; ?>
+                                    <?php if ($submission['hod_sig_path']): ?>
+                                        <img src="<?= url($submission['hod_sig_path']) ?>" class="h-12 mx-auto mix-blend-multiply">
+                                    <?php endif; ?>
+                                    <div class="border-t border-slate-400 mt-1 pt-1 text-[10px] uppercase font-bold">HOD Stamp & Sig</div>
+                                </div>
+                            </div>
+                        </div>
                     <?php endif; ?>
                 </div>
                 <?php endif; ?>
