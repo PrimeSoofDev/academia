@@ -369,11 +369,13 @@ $greeting = match(true) {
 <div class="mt-6 bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
     <h3 class="font-bold text-slate-800 text-sm mb-4">Quick Actions</h3>
     <div class="flex flex-wrap gap-3">
-        <?php if (in_array($role, ['superadmin','vc','dean','hod'])): ?>
+        <?php if (in_array($role, ['superadmin', 'vc'])): ?>
         <a href="<?= url('/users/create') ?>" class="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition-colors shadow-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Add User
         </a>
+        <?php endif; ?>
+        <?php if (in_array($role, ['superadmin', 'vc', 'dean', 'hod'])): ?>
         <a href="<?= url('/courses/create') ?>" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-xl transition-colors shadow-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             New Course
