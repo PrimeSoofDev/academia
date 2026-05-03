@@ -26,7 +26,7 @@ class NotificationController extends Controller
         $userId   = Auth::id();
         $tenantId = Auth::tenantId();
 
-        $notifications = $this->notifModel->where(['user_id' => $userId, 'tenant_id' => $tenantId], 'created_at DESC');
+        $notifications = $this->notifModel->where(['user_id' => $userId, 'tenant_id' => $tenantId], null, 'created_at DESC');
 
         $this->view('notifications.index', [
             'notifications' => $notifications

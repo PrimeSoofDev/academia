@@ -59,7 +59,7 @@ abstract class Model
      * Find records matching given conditions.
      * $conditions = ['column' => 'value', ...]
      */
-    public function where(array $conditions, ?int $tenantId = null): array
+    public function where(array $conditions, ?int $tenantId = null, string $orderBy = ''): array
     {
         $clauses  = [];
         $bindings = [];
@@ -74,7 +74,15 @@ abstract class Model
             $bindings[':tenant_id'] = $tenantId;
         }
 
-        $sql = "SELECT * FROM {$this->table} WHERE " . implode(' AND ', $clauses);
+        $sql = "SELECT * FROM {$this->table}";
+        if (!empty($clauses)) {
+            $sql .= " WHERE " . implode(' AND ', $clauses);
+        }
+
+        if ($orderBy) {
+            $sql .= " ORDER BY {$orderBy}";
+        }
+
         return $this->db->fetchAll($sql, $bindings);
     }
 
